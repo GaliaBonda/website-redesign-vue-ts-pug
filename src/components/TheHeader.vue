@@ -36,6 +36,24 @@ export default defineComponent({
   methods: {
     makeActive,
   },
+  data(): Record<string, unknown> {
+    return {
+      socialImages: [
+        {
+          img: 'socials_1.png',
+          id: 1,
+        },
+        {
+          img: 'socials_2.png',
+          id: 2,
+        },
+        {
+          img: 'socials_3.png',
+          id: 3,
+        },
+      ],
+    };
+  },
 });
 </script>
 
