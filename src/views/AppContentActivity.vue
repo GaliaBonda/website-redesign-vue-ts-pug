@@ -14,6 +14,8 @@
             img.record__album-img(v-for="item in images" v-bind:key="item.id" v-bind:src="require('../assets/' + item.img)" v-on:click="getItemIndex(item.id)" alt="record-img")
 </template>
 
+<style scoped lang="scss" src="../styles/scss/content.scss"></style>
+
 <script lang="ts">
 import {defineComponent} from 'vue';
 import mitt from 'mitt';
@@ -25,7 +27,7 @@ declare module '@vue/runtime-core' {
 }
 
 export default defineComponent({
-  name: 'Activity',
+  name: 'AppContentActivity',
   data() {
     return {
       images: [

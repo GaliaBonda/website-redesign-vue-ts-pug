@@ -36,7 +36,7 @@ const tasks: Task[] = [
 ];
 
 export default defineComponent({
-  name: 'Tasks',
+  name: 'AppContentTasks',
   data() {
     return {
       tasks: tasks,
@@ -45,6 +45,7 @@ export default defineComponent({
 });
 </script>
 
+<style scoped lang="scss" src="../styles/scss/content.scss"></style>
 <style scoped lang="scss">
 .record__title {
   padding: 10px;

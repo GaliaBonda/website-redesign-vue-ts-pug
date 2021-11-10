@@ -1,0 +1,94 @@
+@import './styles';
+
+.content {
+  background-color: $bg-color;
+  &__container {
+    background-color: $main-bg-color;
+    border-radius: 8px;
+  }
+  &__date {
+    padding: 35px 0px 30px 30px;
+    opacity: 0.5;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+  &__records {
+    padding: 0px 30px 20px 30px;
+  }
+  &__record {
+    padding-top: 30px;
+  }
+}
+
+.record {
+  &__info {
+    display: flex;
+    padding-bottom: 20px;
+  }
+  &__text {
+    width: 460px;
+    margin-right: 95px;
+    padding-left: 60px;
+    font-size: 16px;
+    line-height: 20px;
+    position: relative;
+  }
+  &__done::before {
+    content: url('../../assets/Icon@3x.svg');
+    border-radius: 50%;
+    padding: 10px 14px;
+    background-color: $record-icon-bg;
+    position: absolute;
+    left: 0px;
+  }
+  &__comment::before {
+    content: '';
+    border-radius: 50%;
+    width: 43px;
+    height: 43px;
+    background-image: url('../../assets/record_icon_2.jpg');
+    background-size: 43px 43px;
+    display: inline-block;
+    position: absolute;
+    left: 0px;
+  }
+  &__upload::before {
+    content: '';
+    border-radius: 50%;
+    width: 43px;
+    height: 43px;
+    background-image: url('../../assets/record_icon_3.jpg');
+    background-size: 43px 43px;
+    display: inline-block;
+    position: absolute;
+    left: 0px;
+  }
+  &__date {
+    opacity: 0.7;
+    font-size: 14px;
+    line-height: 20px;
+    width: 53px;
+  }
+  &__details {
+    width: 77%;
+    margin-left: 12.5%;
+    margin-right: 20px;
+    background: $bg-color;
+    border-radius: 10px;
+    padding: 20px 30px;
+  }
+  &__details-text {
+    font-size: 15px;
+  }
+  &__album {
+    padding: 0px 12.5% 20px 12.5%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  &__album-img {
+    border-radius: 8px;
+    width: 100px;
+    height: 100px;
+  }
+}

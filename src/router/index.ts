@@ -1,17 +1,16 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
-// import Home from '../views/Home.vue';
-import Activity from '../views/Activity.vue';
+import AppContentActivity from '../views/AppContentActivity.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Activity',
-    component: Activity,
+    name: 'AppContentActivity',
+    component: AppContentActivity,
   },
   {
     path: '/tasks',
-    name: 'Tasks',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Tasks.vue'),
+    name: 'AppContentTasks',
+    component: () => import(/* webpackChunkName: "about" */ '../views/AppContentTasks.vue'),
   },
 ];
 
