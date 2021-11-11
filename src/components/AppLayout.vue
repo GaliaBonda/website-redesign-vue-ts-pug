@@ -3,7 +3,7 @@
   TheSidebar
   section.main
     TheHeader
-    AppContent
+    router-view
 </template>
 
 <style scoped lang="scss">
@@ -33,7 +33,6 @@ import mitt from 'mitt';
 import {defineComponent} from 'vue';
 import TheSidebar from './TheSidebar.vue';
 import TheHeader from './TheHeader.vue';
-import AppContent from './AppContent.vue';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -46,7 +45,6 @@ export default defineComponent({
   components: {
     TheSidebar,
     TheHeader,
-    AppContent,
   },
 });
 </script>
