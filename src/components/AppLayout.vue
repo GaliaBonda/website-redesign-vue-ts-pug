@@ -50,36 +50,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss">
-.btnBlockStyles {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 70px;
-}
-.btnStyles {
-  width: 70px;
-  height: 40px;
-  color: black;
-  background-color: white;
-  border: white;
-  border-radius: 5px;
-  font-size: 20px;
-}
-.confirmMessageStyles {
-  padding: 30px 30px 50px 30px;
-  font-size: 24px;
-  color: white;
-}
-.confirmWindowStyles {
-  position: fixed;
-  top: 50vh;
-  left: 50vw;
-  width: 350px;
-  height: 250px;
-  transform: translate(-50%, -50%);
-  background-color: black;
-  border-radius: 5px;
-}
-</style>

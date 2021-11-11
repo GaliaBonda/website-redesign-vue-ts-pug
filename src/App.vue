@@ -15,9 +15,3 @@ export default defineComponent({
 
 <style src="./styles/css/normalize.css"></style>
 <style src="./styles/css/reset.css"></style>
-<style lang="scss">
-#app {
-  font-family: Helvetica, sans-serif;
-  color: #131313;
-}
-</style>
