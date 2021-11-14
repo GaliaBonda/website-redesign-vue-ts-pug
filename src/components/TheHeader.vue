@@ -2,9 +2,10 @@
 header.header
       .main__container
         .header__top
-          .title
-            h1.title__text Website Redesign
-            a.title__more(href="#") ...
+          router-link(to="/")
+            .title
+              h1.title__text Website Redesign
+              a.title__more(href="#") ...
           .socials
             .socials__photos
               img.socials__photo(v-for="item in socialImages" v-bind:key="item.id" v-bind:src="require('../assets/' + item.img)" alt="socials photo")
@@ -15,16 +16,19 @@ header.header
           ul.nav(id="nav")
             li.nav__item
               router-link(to="/tasks")
-                a.nav__link(href="#" v-on:click="makeActive") Tasks
+                a.nav__link(href="#") Tasks
             li.nav__item
-                a.nav__link(href="#" v-on:click="makeActive") Kanban
+              router-link(to="/kanban")
+                a.nav__link(href="#") Kanban
             li.nav__item
-              router-link(to="/")
-                a.nav__link.nav__link--active(href="#" v-on:click="makeActive") Activity
+              router-link(to="/activity")
+                a.nav__link(href="#") Activity
             li.nav__item
-                a.nav__link(href="#" v-on:click="makeActive") Calendar
+              router-link(to="/calendar")
+                a.nav__link(href="#") Calendar
             li.nav__item
-                a.nav__link(href="#" v-on:click="makeActive") Files
+              router-link(to="/files")
+                a.nav__link(href="#") Files
 </template>
 
 <script lang="ts">
@@ -33,9 +37,6 @@ import makeActive from '../scripts/makeActive';
 
 export default defineComponent({
   name: 'TheHeader',
-  methods: {
-    makeActive,
-  },
   data(): Record<string, unknown> {
     return {
       socialImages: [
@@ -53,6 +54,9 @@ export default defineComponent({
         },
       ],
     };
+  },
+  created() {
+    console.log(this.$route.fullPath);
   },
 });
 </script>
@@ -81,15 +85,16 @@ export default defineComponent({
   &__item {
     position: relative;
   }
-  &__link--active::after {
-    content: '';
-    width: 100%;
-    background-color: $notifications-bg;
-    height: 2px;
-    position: absolute;
-    left: 0px;
-    bottom: -15px;
-  }
+}
+
+.router-link-active::after {
+  content: '';
+  width: 100%;
+  background-color: $notifications-bg;
+  height: 2px;
+  position: absolute;
+  left: 0px;
+  bottom: -15px;
 }
 
 .title {

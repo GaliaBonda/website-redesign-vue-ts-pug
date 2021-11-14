@@ -20,7 +20,7 @@ section.sidebar
           li.tasks__item(id="completed_tasks" v-on:click="changeTasksCounter" v-on:mouseover="makeTasksActive" v-on:mouseleave="makeTasksNonActive")
             span.tasks__item-num {{ completedTasks }}
             span.tasks__item-text Completed Tasks
-          li.tasks__item(id="open_tasks")
+          li.tasks__item(id="open_tasks" v-on:click="goToTasks"  v-on:mouseover="makeTasksActive" v-on:mouseleave="makeTasksNonActive")
             span.tasks__item-num {{ openTasks }}
             span.tasks__item-text Open Tasks
 
@@ -29,7 +29,7 @@ section.sidebar
       nav.nav-container
         ul.sidebar-nav
           li.sidebar-nav__item
-            a.sidebar-nav__link.sidebar-nav__link--active(href="#" class="" v-on:click="makeActive") Menu
+            a.sidebar-nav__link.sidebar-nav__link--active(href="#" v-on:click="makeActive") Menu
           li.sidebar-nav__item
             a.sidebar-nav__link(href="#" v-on:click="makeActive") Home
           li.sidebar-nav__item
@@ -176,7 +176,7 @@ export default defineComponent({
     makeActive,
     makeTasksActive(e: Event): void {
       const currentElement = e.target as HTMLElement;
-      if (currentElement.id === 'completed_tasks') {
+      if (currentElement.id === 'completed_tasks' || currentElement.id === 'open_tasks') {
         currentElement.style.cursor = 'pointer';
         currentElement.style.outline = '3px solid rgba(191, 191, 191, 0.2)';
         currentElement.style.outlineOffset = '4px';
@@ -189,15 +189,18 @@ export default defineComponent({
       if ((this.openTasks as number) > 0) {
         this.confirmChange();
       } else {
-        const declineWindow = this.createWindow("You don't have any open tasks to set complete.");
-        const okBtn = this.createButton('Ok');
-        const btnBlock = this.createBtnBlock();
-        btnBlock.appendChild(okBtn);
-        declineWindow.appendChild(btnBlock);
-        okBtn.onclick = function () {
-          declineWindow.remove();
-        };
+        this.createDeclineWindow('You have no open tasks to set complete.');
       }
+    },
+    createDeclineWindow(message: string): void {
+      const declineWindow = this.createWindow(message);
+      const okBtn = this.createButton('Ok');
+      const btnBlock = this.createBtnBlock();
+      btnBlock.appendChild(okBtn);
+      declineWindow.appendChild(btnBlock);
+      okBtn.onclick = function () {
+        declineWindow.remove();
+      };
     },
     confirmChange(): void {
       const confirmWindow = this.createWindow('Are you sure you want to change the number of tasks?');
@@ -240,6 +243,13 @@ export default defineComponent({
       const btnBlock = document.createElement('div');
       btnBlock.classList.add('btnBlockStyles');
       return btnBlock;
+    },
+    goToTasks(): void {
+      if ((this.openTasks as number) > 0) {
+        this.$router.push('/tasks');
+      } else {
+        this.createDeclineWindow('You have no open tasks.');
+      }
     },
   },
   mounted() {
