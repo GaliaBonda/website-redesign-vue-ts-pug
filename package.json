@@ -2,6 +2,7 @@
   "name": "website-redesign-vue-ts-pug",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://galiabonda.github.io/website-redesign-vue-ts-pug/",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

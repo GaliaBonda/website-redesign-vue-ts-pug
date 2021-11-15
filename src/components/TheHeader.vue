@@ -55,9 +55,6 @@ export default defineComponent({
       ],
     };
   },
-  created() {
-    console.log(this.$route.fullPath);
-  },
 });
 </script>
 
