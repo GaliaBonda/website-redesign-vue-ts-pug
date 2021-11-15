@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
 import AppContentTasks from '../views/AppContentTasks.vue';
+import NotFound from '../views/NotFound.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -39,7 +40,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue'),
+    component: NotFound,
   },
 ];
 
