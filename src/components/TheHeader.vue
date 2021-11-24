@@ -15,20 +15,15 @@ header.header
         nav.header__nav
           ul.nav(id="nav")
             li.nav__item
-              router-link(to="/tasks")
-                a.nav__link(href="#") Tasks
+              router-link.nav__link(to="/tasks") Tasks
             li.nav__item
-              router-link(to="/kanban")
-                a.nav__link(href="#") Kanban
+              router-link.nav__link(to="/kanban") Kanban
             li.nav__item
-              router-link(to="/activity")
-                a.nav__link(href="#") Activity
+              router-link.nav__link(to="/activity") Activity
             li.nav__item
-              router-link(to="/calendar")
-                a.nav__link(href="#") Calendar
+              router-link.nav__link(to="/calendar") Calendar
             li.nav__item
-              router-link(to="/files")
-                a.nav__link(href="#") Files
+              router-link.nav__link(to="/files") Files
 </template>
 
 <script lang="ts">
