@@ -21,12 +21,16 @@
 }
 
 .record {
+  position: relative;
+  padding-bottom: 30px;
   &__info {
     display: flex;
     padding-bottom: 20px;
+    justify-content: space-between;
+    gap: 10px;
   }
   &__text {
-    width: 460px;
+    width: 360px;
     margin-right: 95px;
     padding-left: 60px;
     font-size: 16px;
@@ -67,7 +71,6 @@
     opacity: 0.7;
     font-size: 14px;
     line-height: 20px;
-    width: 53px;
   }
   &__details {
     width: 77%;

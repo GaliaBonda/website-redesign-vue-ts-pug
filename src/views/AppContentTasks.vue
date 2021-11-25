@@ -15,13 +15,14 @@
           label.record-form__date-label(for="date") New task deadline:
           input.record-form-element.record-form__date(type="date" id="date")
         .record-form__item
-          input.record-form-element.record-form__btn(type="submit" id="btn" value="Add task" v-on:click="addTask")
+          input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click="addTask")
     .content__records
       .record.content__record(v-for="item in tasks" v-bind:key="item.id")
         h3.record__title {{item.name}}
         .record__info
           p.record__text {{item.desc}}
           p.record__date {{item.deadLine}}
+        button.record__delete-btn.record__btn(v-on:click="deleteTask" v-bind:data-id="item.id") Delete task
 </template>
 
 <script lang="ts">
@@ -75,6 +76,10 @@ export default defineComponent({
         recordDate.value = '';
       }
     },
+    deleteTask(e: Event) {
+      const recordId = Number((e.target as HTMLElement).getAttribute('data-id'));
+      this.tasks = this.tasks.filter((item) => item.id !== recordId);
+    },
   },
 });
 </script>
@@ -116,16 +121,21 @@ export default defineComponent({
   border-radius: 3px;
   border: 2px solid $share-bg;
 }
-.record-form__btn {
+.record__btn {
   background-color: $bg-color;
   border-radius: 3px;
   border: 2px solid $share-bg;
   padding: 5px;
 }
 
-.record-form__btn:hover {
+.record__btn:hover {
   border: 2px solid $bg-color;
   color: $more-font;
   cursor: pointer;
+}
+.record__delete-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 </style>
