@@ -7,46 +7,47 @@
       .record-form__container
         .record-form__item
           label.record-form__name-label(for="name") New task name:
-          input.record-form-element.record-form__name(type="text" id="name")
+          input.record-form-element.record-form__name(type="text" id="name" v-model="form.name")
         .record-form__item
           label.record-form__desc-label(for="desc") New task description:
-          textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50")
+          textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50" v-model="form.desc" )
         .record-form__item
           label.record-form__date-label(for="date") New task deadline:
-          input.record-form-element.record-form__date(type="date" id="date")
+          input.record-form-element.record-form__date(type="date" id="date" v-model="form.date")
         .record-form__item
           input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click="addTask")
     .content__records
-      .record.content__record(v-for="item in tasks" v-bind:key="item.id")
+      .record.content__record(v-for="(item, index) in tasks" v-bind:key="item.id")
         h3.record__title {{item.name}}
         .record__info
           p.record__text {{item.desc}}
           p.record__date {{item.deadLine}}
-        button.record__delete-btn.record__btn(v-on:click="deleteTask" v-bind:data-id="item.id") Delete task
+        button.record__delete-btn.record__btn(v-on:click="deleteTask(index)" v-bind:data-id="item.id") Delete task
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue';
 import Task from '../interfaces/task.interface';
+import {createWindow, createButton, createBtnBlock, createBlocker} from '../scripts/createMessageWindow';
 
 const tasks: Task[] = [
   {
     name: 'Design mockup',
     desc: "Create full rendering of design for client's web-product. Client K&H Science",
     deadLine: '12.11.2021',
-    id: 111,
+    id: 1,
   },
   {
     name: 'Analysis of requirements and outcomes',
     desc: 'Evaluate the product design and development against project requirements and outcomes',
     deadLine: '14.12.2021',
-    id: 112,
+    id: 2,
   },
   {
     name: 'Application Testing',
     desc: 'Identify errors in a website, provide unit, system and functional testing',
     deadLine: '21.11.2021',
-    id: 113,
+    id: 3,
   },
 ];
 
@@ -55,30 +56,50 @@ export default defineComponent({
   data() {
     return {
       tasks: tasks,
+      form: {
+        name: '',
+        desc: '',
+        date: '',
+      },
     };
   },
   methods: {
+    createWindow,
+    createButton,
+    createBtnBlock,
+    createBlocker,
     addTask(e: Event) {
       e.preventDefault();
-      const recordName = document.getElementById('name') as HTMLInputElement;
-      const recordDesc = document.getElementById('desc') as HTMLTextAreaElement;
-      const recordDate = document.getElementById('date') as HTMLInputElement;
-      const date = new Date(recordDate.value).toLocaleDateString();
-      if (recordName.value && recordDesc.value && recordDate.value) {
+      const formattedDate = new Date(this.form.date).toLocaleDateString();
+      if (this.form.name && this.form.desc && this.form.date) {
         this.tasks.push({
-          name: recordName.value,
-          desc: recordDesc.value,
-          deadLine: date,
-          id: tasks[tasks.length - 1].id + 1,
+          name: this.form.name,
+          desc: this.form.desc,
+          deadLine: formattedDate,
+          id: tasks.length + 1,
         });
-        recordName.value = '';
-        recordDesc.value = '';
-        recordDate.value = '';
+        this.form.name = '';
+        this.form.desc = '';
+        this.form.date = '';
+      } else {
+        const blocker = this.createBlocker();
+        const errorWindow = this.createWindow(
+          'No empty fields. Please, fill them all.',
+          'confirmWindowStyles',
+          'confirmMessageStyles',
+        );
+        blocker.appendChild(errorWindow);
+        const okBtn = this.createButton('Ok', 'btnStyles');
+        const btnBlock = this.createBtnBlock('btnBlockStyles');
+        btnBlock.appendChild(okBtn);
+        errorWindow.appendChild(btnBlock);
+        okBtn.onclick = function () {
+          blocker.remove();
+        };
       }
     },
-    deleteTask(e: Event) {
-      const recordId = Number((e.target as HTMLElement).getAttribute('data-id'));
-      this.tasks = this.tasks.filter((item) => item.id !== recordId);
+    deleteTask(index: number) {
+      this.tasks.splice(index, 1);
     },
   },
 });
