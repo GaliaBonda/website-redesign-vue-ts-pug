@@ -14,6 +14,7 @@ $notifications-bg: #ffc200;
 $share-bg: #eaeaea;
 $chat-bg: #fff8dd;
 $record-icon-bg: #cef9c6;
+$message-font: #efeded;
 
 *,
 *::after,
@@ -34,6 +35,14 @@ button:hover {
   font-family: Helvetica, sans-serif;
   color: #131313;
 }
+.blocker {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(252, 250, 250, 0.8);
+  overflow-y: hidden;
+  position: absolute;
+  top: 0;
+}
 .btnBlockStyles {
   margin-top: 20px;
   display: flex;
@@ -43,24 +52,30 @@ button:hover {
 .btnStyles {
   width: 70px;
   height: 40px;
-  color: black;
-  background-color: white;
-  border: white;
-  border-radius: 5px;
-  font-size: 20px;
+  background-color: $main-bg-color;
+  border-radius: 3px;
+  border: 2px solid $share-bg;
+  padding: 5px;
+  font-size: 18px;
 }
+
+.btnStyles:hover {
+  border: 2px solid $font-color;
+}
+
 .confirmMessageStyles {
-  padding: 30px 30px 50px 30px;
-  font-size: 24px;
-  color: white;
+  padding: 30px 30px 40px 30px;
+  font-size: 18px;
 }
+
 .confirmWindowStyles {
   position: fixed;
   top: 50vh;
   left: 50vw;
   width: 350px;
-  height: 250px;
+  height: 200px;
   transform: translate(-50%, -50%);
-  background-color: black;
+  border: 2px solid $share-bg;
+  background-color: $message-font;
   border-radius: 5px;
 }

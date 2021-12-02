@@ -159,6 +159,7 @@ section.sidebar
 <script lang="ts">
 import {defineComponent} from 'vue';
 import makeActive from '../scripts/makeActive';
+import {createWindow, createBtnBlock, createButton, createBlocker} from '../scripts/createMessageWindow';
 
 export default defineComponent({
   name: 'TheSidebar',
@@ -174,6 +175,10 @@ export default defineComponent({
   },
   methods: {
     makeActive,
+    createWindow,
+    createBtnBlock,
+    createButton,
+    createBlocker,
     makeTasksActive(e: Event): void {
       const currentElement = e.target as HTMLElement;
       if (currentElement.id === 'completed_tasks' || currentElement.id === 'open_tasks') {
@@ -193,20 +198,28 @@ export default defineComponent({
       }
     },
     createDeclineWindow(message: string): void {
-      const declineWindow = this.createWindow(message);
-      const okBtn = this.createButton('Ok');
-      const btnBlock = this.createBtnBlock();
+      const blocker = this.createBlocker();
+      const declineWindow = this.createWindow(message, 'confirmWindowStyles', 'confirmMessageStyles');
+      blocker.appendChild(declineWindow);
+      const okBtn = this.createButton('Ok', 'btnStyles');
+      const btnBlock = this.createBtnBlock('btnBlockStyles');
       btnBlock.appendChild(okBtn);
       declineWindow.appendChild(btnBlock);
       okBtn.onclick = function () {
-        declineWindow.remove();
+        blocker.remove();
       };
     },
     confirmChange(): void {
-      const confirmWindow = this.createWindow('Are you sure you want to change the number of tasks?');
-      const btnBlock = this.createBtnBlock();
-      const yesBtn = this.createButton('Yep');
-      const noBtn = this.createButton('Nope');
+      const blocker = this.createBlocker();
+      const confirmWindow = this.createWindow(
+        'Are you sure you want to change the number of tasks?',
+        'confirmWindowStyles',
+        'confirmMessageStyles',
+      );
+      blocker.appendChild(confirmWindow);
+      const btnBlock = this.createBtnBlock('btnBlockStyles');
+      const yesBtn = this.createButton('Yep', 'btnStyles');
+      const noBtn = this.createButton('Nope', 'btnStyles');
       btnBlock.appendChild(yesBtn);
       btnBlock.appendChild(noBtn);
 
@@ -214,35 +227,9 @@ export default defineComponent({
       yesBtn.onclick = () => {
         this.completedTasks = (this.completedTasks as number) + 1;
         this.openTasks = (this.openTasks as number) - 1;
-        confirmWindow.remove();
+        blocker.remove();
       };
-      noBtn.onclick = () => confirmWindow.remove();
-    },
-    createWindow(message: string): HTMLDivElement {
-      const confirmWindow = document.createElement('div');
-      confirmWindow.classList.add('confirmWindowStyles');
-      document.body.style.position = 'relative';
-      const confirmMessage = this.createConfirmMessage(message);
-      confirmWindow.appendChild(confirmMessage);
-      document.body.appendChild(confirmWindow);
-      return confirmWindow;
-    },
-    createConfirmMessage(message: string): HTMLParagraphElement {
-      const confirmMessage = document.createElement('p');
-      confirmMessage.classList.add('confirmMessageStyles');
-      confirmMessage.innerText = message;
-      return confirmMessage;
-    },
-    createButton(btnName: string): HTMLButtonElement {
-      const btn = document.createElement('button');
-      btn.innerHTML = btnName;
-      btn.classList.add('btnStyles');
-      return btn;
-    },
-    createBtnBlock(): HTMLDivElement {
-      const btnBlock = document.createElement('div');
-      btnBlock.classList.add('btnBlockStyles');
-      return btnBlock;
+      noBtn.onclick = () => blocker.remove();
     },
     goToTasks(): void {
       if ((this.openTasks as number) > 0) {
