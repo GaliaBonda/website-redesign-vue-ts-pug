@@ -20,13 +20,13 @@
       .record.content__record(v-for="(item, index) in tasks" v-bind:key="item.id")
         h3.record__title {{item.name}}
         .record__info
-          p.record__text {{item.desc}}
+          p.record__text(v-bind:ref="setItemRef") {{item.desc}}
           p.record__date {{item.deadLine}}
-        button.record__delete-btn.record__btn(v-on:click="deleteTask(index)" v-bind:data-id="item.id") Delete task
+        button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, onBeforeUpdate, onMounted, onUpdated} from 'vue';
 import Task from '../interfaces/task.interface';
 import {createWindow, createButton, createBtnBlock, createBlocker} from '../scripts/createMessageWindow';
 
@@ -55,12 +55,49 @@ export default defineComponent({
   name: 'AppContentTasks',
   data() {
     return {
-      tasks: tasks,
+      tasks: [
+        {
+          name: '',
+          desc: '',
+          deadLine: '',
+          id: 0,
+        },
+      ],
       form: {
         name: '',
         desc: '',
         date: '',
       },
+    };
+  },
+  setup() {
+    let itemRefs: HTMLElement[] = [];
+    let tasksNumber: number;
+    const setItemRef = (el: HTMLElement) => {
+      if (el) {
+        itemRefs.push(el);
+      }
+    };
+    const animateNewTask = () => {
+      console.log('new item added');
+      console.log(itemRefs[itemRefs.length - 1]);
+      itemRefs[itemRefs.length - 1].classList.add('blink-animation');
+    };
+    onMounted(() => {
+      tasksNumber = tasks.length;
+      itemRefs.forEach((el, index) => {
+        const delay = index * 1000;
+        setTimeout(() => {
+          el.classList.add('grow-animation');
+        }, delay);
+      });
+    });
+    onUpdated(() => {
+      if (tasksNumber < tasks.length) animateNewTask();
+      tasksNumber = tasks.length;
+    });
+    return {
+      setItemRef,
     };
   },
   methods: {
@@ -102,12 +139,48 @@ export default defineComponent({
       this.tasks.splice(index, 1);
     },
   },
+  created() {
+    this.tasks = tasks;
+  },
 });
 </script>
 
 <style scoped lang="scss" src="../styles/scss/content.scss"></style>
 <style scoped lang="scss">
 @import '../styles/scss/styles.scss';
+
+@keyframes grow {
+  0% {
+  }
+  50% {
+    transform: scale(1.15, 1.15);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes blink {
+  0% {
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink-animation {
+  animation-name: blink;
+  animation-duration: 1s;
+  animation-iteration-count: 3;
+}
+
+.grow-animation {
+  animation-name: grow;
+  animation-duration: 2s;
+}
 
 .record__title {
   padding: 10px;
