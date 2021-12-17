@@ -14,21 +14,31 @@
         .record-form__item
           label.record-form__date-label(for="date") New task deadline:
           input.record-form-element.record-form__date(type="date" id="date" v-model="form.date")
+        .record-form__item.record-form__status-item
+          label.record-form__status-label(for="status-todo") TODO
+            input.record-form-element.record-form__status(type="radio" id="status-todo" v-model="form.status" name="status" value='TODO')
+          label.record-form__status-label(for="status-inprogress") INPROGRESS
+            input.record-form-element.record-form__status(type="radio" id="status-inprogress" v-model="form.status" name="status" value='INPROGRESS')
+          label.record-form__status-label(for="status-done") DONE
+            input.record-form-element.record-form__status(type="radio" id="status-done" v-model="form.status" name="status" value='DONE')
         .record-form__item
           input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click="addTask")
     .content__records
-      .record.content__record(v-for="(item, index) in tasks" v-bind:key="item.id")
+      .record.content__record(v-for="(item, index) in this.$store.state.tasks" v-bind:key="item.id")
         h3.record__title {{item.name}}
         .record__info
           p.record__text(v-bind:ref="setItemRef") {{item.desc}}
+          p.record__status {{item.status}}
           p.record__date {{item.deadLine}}
         button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
 </template>
 
 <script lang="ts">
-import {defineComponent, onBeforeUpdate, onMounted, onUpdated} from 'vue';
+import {computed, defineComponent, onMounted, onUpdated} from 'vue';
 import Task from '../interfaces/task.interface';
+import Status from '../interfaces/status.interface';
 import {createWindow, createButton, createBtnBlock, createBlocker} from '../scripts/createMessageWindow';
+import {useStore} from 'vuex';
 
 const tasks: Task[] = [
   {
@@ -36,18 +46,21 @@ const tasks: Task[] = [
     desc: "Create full rendering of design for client's web-product. Client K&H Science",
     deadLine: '12.11.2021',
     id: 1,
+    status: Status.TODO,
   },
   {
     name: 'Analysis of requirements and outcomes',
     desc: 'Evaluate the product design and development against project requirements and outcomes',
     deadLine: '14.12.2021',
     id: 2,
+    status: Status.INPROGRESS,
   },
   {
     name: 'Application Testing',
     desc: 'Identify errors in a website, provide unit, system and functional testing',
     deadLine: '21.11.2021',
     id: 3,
+    status: Status.DONE,
   },
 ];
 
@@ -55,22 +68,19 @@ export default defineComponent({
   name: 'AppContentTasks',
   data() {
     return {
-      tasks: [
-        {
-          name: '',
-          desc: '',
-          deadLine: '',
-          id: 0,
-        },
-      ],
       form: {
         name: '',
         desc: '',
         date: '',
+        status: Status.TODO,
       },
     };
   },
   setup() {
+    const store = useStore();
+    let stateTasks = computed(function () {
+      return store.state.tasks;
+    });
     let itemRefs: HTMLElement[] = [];
     let tasksNumber: number;
     const setItemRef = (el: HTMLElement) => {
@@ -79,12 +89,10 @@ export default defineComponent({
       }
     };
     const animateNewTask = () => {
-      console.log('new item added');
-      console.log(itemRefs[itemRefs.length - 1]);
       itemRefs[itemRefs.length - 1].classList.add('blink-animation');
     };
     onMounted(() => {
-      tasksNumber = tasks.length;
+      tasksNumber = stateTasks.value.length;
       itemRefs.forEach((el, index) => {
         const delay = index * 1000;
         setTimeout(() => {
@@ -93,8 +101,8 @@ export default defineComponent({
       });
     });
     onUpdated(() => {
-      if (tasksNumber < tasks.length) animateNewTask();
-      tasksNumber = tasks.length;
+      if (tasksNumber < stateTasks.value.length) animateNewTask();
+      tasksNumber = stateTasks.value.length;
     });
     return {
       setItemRef,
@@ -108,16 +116,20 @@ export default defineComponent({
     addTask(e: Event) {
       e.preventDefault();
       const formattedDate = new Date(this.form.date).toLocaleDateString();
+      const formStatus = this.form.status;
+      const formattedStatus = Status[formStatus as unknown as keyof typeof Status];
       if (this.form.name && this.form.desc && this.form.date) {
-        this.tasks.push({
+        this.$store.commit('addNewTask', {
           name: this.form.name,
           desc: this.form.desc,
           deadLine: formattedDate,
-          id: tasks.length + 1,
+          id: this.$store.state.tasks.length + 1,
+          status: formattedStatus || Status.TODO,
         });
         this.form.name = '';
         this.form.desc = '';
         this.form.date = '';
+        this.form.status = Status.TODO;
       } else {
         const blocker = this.createBlocker();
         const errorWindow = this.createWindow(
@@ -136,11 +148,8 @@ export default defineComponent({
       }
     },
     deleteTask(index: number) {
-      this.tasks.splice(index, 1);
+      this.$store.commit('removeTask', index);
     },
-  },
-  created() {
-    this.tasks = tasks;
   },
 });
 </script>
@@ -192,6 +201,14 @@ export default defineComponent({
   padding: 20px 30px 30px 30px;
   border-top: 5px solid $bg-color;
   border-bottom: 5px solid $bg-color;
+  &__status-item {
+    flex-direction: column;
+    gap: 15px;
+  }
+  &__status-label {
+    display: flex;
+    gap: 15px;
+  }
 }
 .record-form__title {
   padding: 10px 0;
