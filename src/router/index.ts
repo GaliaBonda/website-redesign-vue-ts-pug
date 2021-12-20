@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/kanban',
     name: 'Kanban',
-    component: () => import('../views/ComingSoon.vue'),
+    component: () => import('../views/AppContentKanban.vue'),
   },
   {
     path: '/calendar',
