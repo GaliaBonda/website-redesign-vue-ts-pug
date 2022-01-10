@@ -3,29 +3,22 @@
   .content__container
     h2.content__date Kanban Board
     .content__records
-      table.content__table.table
-        tr.table__head.table__row
-            th.table__cell.table__head-cell To Do
-            th.table__cell.table__head-cell In Progress 
-            th.table__cell.table__head-cell Done
-        tr.table__row
-            td.table__cell(v-for="(item, index) in filteredTasks[0]" v-bind:key="index") {{item.name}} 
-              span.table-cell__date {{item.deadLine}}
-        tr.table__row
-            td.table__cell(v-for="(item1, index1) in filteredTasks[1]" v-bind:key="index1") {{item1.name}} 
-              span.table-cell__date {{item1.deadLine}}
-        tr.table__row
-            td.table__cell(v-for="(item2, index2) in filteredTasks[2]" v-bind:key="index2") {{item2.name}} 
-              span.table-cell__date {{item2.deadLine}}
+      .content__table.kanban-table 
+        .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
+          AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item")
 </template>
 
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
 import Task from '@/interfaces/task.interface';
 import {defineComponent} from 'vue';
+import AppKanbanTasks from '../components/AppKanbanTasks.vue';
 
 export default defineComponent({
   name: 'AppContentKanban',
+  components: {
+    AppKanbanTasks,
+  },
   data() {
     return {};
   },
@@ -42,31 +35,8 @@ export default defineComponent({
     doneTasks(): Task[] {
       return this.$store.state.tasks.filter((item) => item.status === Status.DONE);
     },
-    filteredTasks() {
-      let columns = [];
-      const rows = [];
-      const emptyTask = {name: '', deadLine: ''};
-      const maxLength = Math.max(this.toDoTasks.length, this.inProgressTasks.length, this.doneTasks.length);
-      for (let i = 0; i < maxLength; i++) {
-        if (this.toDoTasks[i]) {
-          columns.push(this.toDoTasks[i]);
-        } else {
-          columns.push(emptyTask);
-        }
-        if (this.inProgressTasks[i]) {
-          columns.push(this.inProgressTasks[i]);
-        } else {
-          columns.push(emptyTask);
-        }
-        if (this.doneTasks[i]) {
-          columns.push(this.doneTasks[i]);
-        } else {
-          columns.push(emptyTask);
-        }
-        rows.push(columns);
-        columns = [];
-      }
-      return rows;
+    filteredKanbanTasks() {
+      return [this.toDoTasks, this.inProgressTasks, this.doneTasks];
     },
   },
   methods: {},
@@ -76,6 +46,21 @@ export default defineComponent({
 <style scoped lang="scss" src="../styles/scss/content.scss"></style>
 <style scoped lang="scss">
 @import '../styles/scss/styles.scss';
+
+.kanban-table {
+  display: flex;
+  justify-content: space-between;
+  outline: 4px solid $more-bg;
+
+  &__item {
+    border-left: 8px solid $more-bg;
+    padding: 8px;
+  }
+
+  &__item:first-child {
+    border-left: none;
+  }
+}
 
 .table {
   width: 100%;
