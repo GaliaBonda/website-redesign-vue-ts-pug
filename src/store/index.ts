@@ -29,6 +29,8 @@ const initialState: Task[] = [
 export default createStore({
   state: {
     tasks: initialState,
+    mouseIsTracked: false,
+    mouseCoordinates: [0, 0],
   },
   mutations: {
     addNewTask(state, payload: Task) {
@@ -36,6 +38,12 @@ export default createStore({
     },
     removeTask(state, index: number) {
       state.tasks.splice(index, 1);
+    },
+    changeMouseTracking(state) {
+      state.mouseIsTracked = !state.mouseIsTracked;
+    },
+    trackMouseCoordinates(state, payload: [number, number]) {
+      state.mouseCoordinates = payload;
     },
   },
   actions: {},

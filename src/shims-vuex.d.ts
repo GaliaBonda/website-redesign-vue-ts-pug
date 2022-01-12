@@ -2,9 +2,10 @@ import {ComponentCustomProperties} from 'vue';
 import {Store} from 'vuex';
 
 declare module '@vue/runtime-core' {
-  // Declare your own store states.
   interface State {
     tasks: Task[];
+    mouseIsTracked: boolean;
+    mouseCoordinates: [number, number];
   }
 
   interface ComponentCustomProperties {

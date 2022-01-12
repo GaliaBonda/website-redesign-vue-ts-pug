@@ -1,9 +1,9 @@
 <template lang="pug">
-.content.main__content
+.content.main__content(v-on:mousemove="defineMouseCoord")
   .content__container
     h2.content__date Kanban Board
     .content__records
-      .content__table.kanban-table 
+      .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
           AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item")
 </template>
@@ -35,11 +35,24 @@ export default defineComponent({
     doneTasks(): Task[] {
       return this.$store.state.tasks.filter((item) => item.status === Status.DONE);
     },
-    filteredKanbanTasks() {
+    filteredKanbanTasks(): [Task[], Task[], Task[]] {
       return [this.toDoTasks, this.inProgressTasks, this.doneTasks];
     },
   },
-  methods: {},
+  methods: {
+    defineMouseCoord(event: MouseEvent) {
+      if (this.$store.state.mouseIsTracked) {
+        this.$store.commit('trackMouseCoordinates', [event.pageX, event.pageY]);
+        console.log(this.$store.state.mouseCoordinates);
+      }
+    },
+    calculateTableSizes(event: MouseEvent) {
+      if (this.$store.state.mouseIsTracked && event.currentTarget) {
+        console.log((event.currentTarget as HTMLElement).getBoundingClientRect().top);
+        console.log((event.currentTarget as HTMLElement).getBoundingClientRect().width);
+      }
+    },
+  },
 });
 </script>
 
