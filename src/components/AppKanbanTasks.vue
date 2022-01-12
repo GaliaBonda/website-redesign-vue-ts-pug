@@ -2,18 +2,24 @@
 .kanban-tasks
   .kanban-tasks-title {{status}}
   .kanban-tasks-list
-    .kanban-tasks-list__item(v-for="(item, index) in tasks" v-bind:key="index") 
-      .kanban-task-name {{item.name}}
-      .kanban-task-deadline {{item.deadLine}}
+    .kanban-tasks-list__item(v-for="(item, index) in tasks" v-bind:key="index")
+      AppTask(v-bind:name="item.name" v-bind:deadLine="item.deadLine") 
 </template>
 
 <script lang="ts">
+import Status from '@/interfaces/status.interface';
 import {defineComponent} from 'vue';
+import AppTask from './AppTask.vue';
 
 export default defineComponent({
   name: 'AppKanbanTasks',
+  components: {
+    AppTask,
+  },
   props: {
-    status: String,
+    status: {
+      type: String,
+    },
     tasks: Array,
   },
 });
@@ -33,17 +39,5 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.kanban-task {
-  &-name {
-    opacity: 0.7;
-    font-size: 14px;
-    margin-bottom: 7px;
-  }
-  &-deadline {
-    font-weight: bold;
-    opacity: 0.7;
-  }
 }
 </style>
