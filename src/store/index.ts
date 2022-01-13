@@ -1,6 +1,8 @@
 import {createStore} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
+import {State} from 'vue';
+import {IfStatement} from '@vue/compiler-core';
 
 const initialState: Task[] = [
   {
@@ -39,8 +41,15 @@ export default createStore({
     removeTask(state, index: number) {
       state.tasks.splice(index, 1);
     },
-    changeMouseTracking(state) {
-      state.mouseIsTracked = !state.mouseIsTracked;
+    changeTaskStatus(state, payload: {id: number; status: Status}) {
+      // const currentTask = state.tasks.find((item: Task) => item.id === payload.id);
+      // if (currentTask) currentTask.status = payload.status;
+      state.tasks.map((item) => {
+        if (item.id === payload.id) item.status = payload.status;
+      });
+    },
+    changeMouseTracking(state, payload: boolean) {
+      state.mouseIsTracked = payload;
     },
     trackMouseCoordinates(state, payload: [number, number]) {
       state.mouseCoordinates = payload;

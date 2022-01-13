@@ -2,6 +2,7 @@
 
 .content {
   background-color: $bg-color;
+  min-height: 100vh;
   &__container {
     background-color: $main-bg-color;
     border-radius: 8px;

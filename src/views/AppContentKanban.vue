@@ -1,11 +1,11 @@
 <template lang="pug">
-.content.main__content(v-on:mousemove="defineMouseCoord")
+.content.main__content(v-on:mousemove="defineMouseCoord" v-on:mouseup.stop.prevent="this.$store.commit('changeMouseTracking', false);")
   .content__container
     h2.content__date Kanban Board
     .content__records
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
-          AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item")
+          AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
 </template>
 
 <script lang="ts">
@@ -20,7 +20,10 @@ export default defineComponent({
     AppKanbanTasks,
   },
   data() {
-    return {};
+    return {
+      toDoEdge: 0,
+      inProgressEdge: 0,
+    };
   },
   computed: {
     stateTasks(): Task[] {
@@ -35,21 +38,28 @@ export default defineComponent({
     doneTasks(): Task[] {
       return this.$store.state.tasks.filter((item) => item.status === Status.DONE);
     },
-    filteredKanbanTasks(): [Task[], Task[], Task[]] {
-      return [this.toDoTasks, this.inProgressTasks, this.doneTasks];
+    filteredKanbanTasks(): Task[][] | {status: Status}[][] {
+      const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
+      const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
+      const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
+      return [toDoArray, inProgressArray, doneArray];
     },
   },
   methods: {
     defineMouseCoord(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
-        this.$store.commit('trackMouseCoordinates', [event.pageX, event.pageY]);
-        console.log(this.$store.state.mouseCoordinates);
+        this.$store.commit('trackMouseCoordinates', [event.clientX, event.clientY]);
+        // console.log(this.$store.state.mouseCoordinates);
       }
     },
     calculateTableSizes(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked && event.currentTarget) {
-        console.log((event.currentTarget as HTMLElement).getBoundingClientRect().top);
-        console.log((event.currentTarget as HTMLElement).getBoundingClientRect().width / 3);
+        const kanbanTable = event.currentTarget as HTMLElement;
+        const kanbanTableWidth = kanbanTable.getBoundingClientRect().width;
+        this.toDoEdge = kanbanTable.getBoundingClientRect().left + kanbanTableWidth / 3;
+        this.inProgressEdge = this.toDoEdge + kanbanTableWidth / 3;
+        // console.log('to do edge ', this.toDoEdge);
+        // console.log('in progress edge ', this.inProgressEdge);
       }
     },
   },

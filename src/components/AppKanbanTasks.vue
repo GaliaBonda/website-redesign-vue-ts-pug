@@ -3,7 +3,7 @@
   .kanban-tasks-title {{status}}
   .kanban-tasks-list
     .kanban-tasks-list__item(v-for="(item, index) in tasks" v-bind:key="index")
-      AppTask(v-bind:name="item.name" v-bind:deadLine="item.deadLine") 
+      AppTask(v-if="item.id" v-bind:name="item.name" v-bind:deadLine="item.deadLine" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge" v-bind:id="item.id" v-bind:status="status") 
 </template>
 
 <script lang="ts">
@@ -21,6 +21,8 @@ export default defineComponent({
       type: String,
     },
     tasks: Array,
+    toDoEdge: Number,
+    inProgressEdge: Number,
   },
 });
 </script>
@@ -38,6 +40,6 @@ export default defineComponent({
 .kanban-tasks-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 </style>
