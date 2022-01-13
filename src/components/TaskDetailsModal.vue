@@ -65,7 +65,7 @@ export default defineComponent({
         id: this.id,
         name: this.taskName,
         desc: this.taskDesc,
-        status: Status[this.taskStatus as unknown as keyof typeof Status],
+        status: Status[this.taskStatus?.toUpperCase() as unknown as keyof typeof Status],
         deadline: this.taskDeadLine,
       };
       this.$store.commit('changeTask', updatedTask);

@@ -48,9 +48,15 @@ export default createStore({
         if (item.id === payload.id) item.status = payload.status;
       });
     },
-    changeTask(state, payload) {
+    changeTask(state, payload: Task) {
+      console.log(payload);
       state.tasks.map((item) => {
-        if (item.id === payload.id) item = payload;
+        if (item.id === payload.id) {
+          item.name = payload.name;
+          item.desc = payload.desc;
+          item.status = payload.status;
+          item.deadLine = payload.deadLine;
+        }
       });
     },
     changeMouseTracking(state, payload: boolean) {
