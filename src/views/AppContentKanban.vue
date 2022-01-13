@@ -49,7 +49,7 @@ export default defineComponent({
     calculateTableSizes(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked && event.currentTarget) {
         console.log((event.currentTarget as HTMLElement).getBoundingClientRect().top);
-        console.log((event.currentTarget as HTMLElement).getBoundingClientRect().width);
+        console.log((event.currentTarget as HTMLElement).getBoundingClientRect().width / 3);
       }
     },
   },
@@ -62,11 +62,13 @@ export default defineComponent({
 
 .kanban-table {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   outline: 4px solid $more-bg;
+  min-height: 20vh;
 
   &__item {
     border-left: 8px solid $more-bg;
+    width: calc(100% / 3);
     padding: 8px;
   }
 
