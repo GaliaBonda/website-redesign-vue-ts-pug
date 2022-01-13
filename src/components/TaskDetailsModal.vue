@@ -1,10 +1,10 @@
 <template lang="pug">
 .modal-background
   .details-modal
-    h3.record__title Name
-    p.record__text Description
-    p.record__status Status
-    p.record__date Deadline
+    h3.record__title {{name}}
+    p.record__text.details__text {{desc}}
+    p.record__status {{status}}
+    p.record__date {{deadLine}}
     button.record__btn.details-btn(v-on:click="closeModal") Close 
 </template>
 
@@ -16,6 +16,15 @@ export default defineComponent({
   name: 'TaskDetailsModal',
   data() {
     return {};
+  },
+  props: {
+    name: String,
+    desc: String,
+    deadLine: String,
+    id: Number,
+    status: {
+      type: String,
+    },
   },
   methods: {
     closeModal() {
@@ -31,13 +40,17 @@ export default defineComponent({
 
 .details-modal {
   padding: 10px;
-  width: 200px;
+  min-width: 200px;
   height: 200px;
   background-color: white;
   z-index: 100;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+.details__text {
+  padding: 0;
+  margin: 0;
 }
 .details-btn {
   width: 100px;

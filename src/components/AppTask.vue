@@ -3,7 +3,7 @@
   .task-name {{name}}
   .task-deadline {{deadLine}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
-  TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails")
+  TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
 </template>
 
 <script lang="ts">

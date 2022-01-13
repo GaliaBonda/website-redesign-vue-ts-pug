@@ -6,19 +6,21 @@
     .content__records
       button.record__btn(v-on:click="openNewTaskModal") Add new task
       .record.content__record(v-for="(item, index) in this.$store.state.tasks" v-bind:key="item.id")
-        h3.record__title {{item.name}}
-        .record__info
-          p.record__text(v-bind:ref="setItemRef") {{item.desc}}
-          p.record__status {{item.status}}
-          p.record__date {{item.deadLine}}
-        button.record__btn(v-on:click="openDetailsModal") Details...
-        button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
-        TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetailsModal")
+        AppContentTask(v-bind:ref="setItemRef" v-bind:name="item.name" v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" v-bind:status="item.status" v-bind:id="item.id")
+        //- h3.record__title {{item.name}}
+        //- .record__info
+        //-   p.record__text(v-bind:ref="setItemRef") {{item.desc}}
+        //-   p.record__status {{item.status}}
+        //-   p.record__date {{item.deadLine}}
+        //- TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetailsModal" v-bind:name="item.name" v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" v-bind:status="item.status" v-bind:id="item.id")
+        //- button.record__btn(v-on:click="openDetailsModal") Details...
+        //- button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, onUpdated} from 'vue';
 import {useStore} from 'vuex';
+import AppContentTask from '../components/AppContentTask.vue';
 import AppNewTaskModal from '../components/AppNewTaskModal.vue';
 import TaskDetailsModal from '../components/TaskDetailsModal.vue';
 
@@ -27,6 +29,7 @@ export default defineComponent({
   components: {
     AppNewTaskModal,
     TaskDetailsModal,
+    AppContentTask,
   },
   data() {
     return {
@@ -55,6 +58,7 @@ export default defineComponent({
         const delay = index * 1000;
         setTimeout(() => {
           el.classList.add('grow-animation');
+          //console.log(el);
         }, delay);
       });
     });
@@ -121,12 +125,5 @@ export default defineComponent({
 .grow-animation {
   animation-name: grow;
   animation-duration: 2s;
-}
-
-.record__title {
-  padding: 10px;
-  opacity: 0.5;
-  font-size: 12px;
-  text-transform: uppercase;
 }
 </style>
