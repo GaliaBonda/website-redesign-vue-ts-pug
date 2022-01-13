@@ -1,19 +1,26 @@
 <template lang="pug">
-.task(v-on:mousedown.stop.prevent="startMoving" v-on:mouseup.stop.prevent="stopMoving" v-on:mousemove="moveCard")
+.task(v-on:mousedown.stop.prevent="startMoving" v-on:mouseup.stop.prevent="stopMoving" v-on:mousemove="moveCard" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
   .task-deadline {{deadLine}}
+  button.task-details-btn.record__btn(v-on:click="showDetails") Details...
+  TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails")
 </template>
 
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
 import {defineComponent} from 'vue';
+import TaskDetailsModal from './TaskDetailsModal.vue';
 
 export default defineComponent({
   name: 'AppTask',
+  components: {
+    TaskDetailsModal,
+  },
   data() {
     return {
       shiftX: 0,
       shiftY: 0,
+      detailsModalIsOpen: false,
     };
   },
   props: {
@@ -45,21 +52,10 @@ export default defineComponent({
 
         taskCard.style.left = mouseCoord[0] - this.shiftX + 'px';
         taskCard.style.top = mouseCoord[1] - this.shiftY + 'px';
-        console.log(mouseCoord[0], mouseCoord[1]);
+        // console.log(mouseCoord[0], mouseCoord[1]);
         const todoEdge = this.toDoEdge;
         const inProgressEdge = this.inProgressEdge;
         if (todoEdge && inProgressEdge) this.relocateCard(mouseCoord, todoEdge, inProgressEdge);
-        // if (
-        //   this.toDoEdge &&
-        //   this.inProgressEdge &&
-        //   mouseCoord[0] > this.toDoEdge &&
-        //   mouseCoord[0] < this.inProgressEdge
-        // ) {
-        //   console.log('make task status in progress');
-        //   this.$store.commit('changeTaskStatus', {id: this.id, status: Status.INPROGRESS});
-        //   console.log(this.$store.state.tasks);
-        // }
-        // console.log(this.inProgressEdge, this.toDoEdge);
       }
     },
     relocateCard(mouseCoord: [number, number], todoEdge: number, inProgressEdge: number) {
@@ -76,12 +72,19 @@ export default defineComponent({
     stopMoving(event: MouseEvent) {
       this.$store.commit('changeMouseTracking', false);
       const taskCard = event.currentTarget as HTMLElement;
-      taskCard.style.zIndex = '2';
+      taskCard.style.zIndex = '1';
+    },
+    showDetails() {
+      this.detailsModalIsOpen = true;
+    },
+    closeDetails() {
+      this.detailsModalIsOpen = false;
     },
   },
 });
 </script>
 
+<style scoped lang="scss" src="../styles/scss/content.scss"></style>
 <style scoped lang="scss">
 @import '../styles/scss/styles.scss';
 
@@ -89,6 +92,10 @@ export default defineComponent({
   background-color: $bg-color;
   padding: 5px;
   width: 13vw;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  outline: 2px solid $active-font;
   &-name {
     opacity: 0.7;
     font-size: 14px;
@@ -97,6 +104,10 @@ export default defineComponent({
   &-deadline {
     font-weight: bold;
     opacity: 0.7;
+  }
+  &-details-btn {
+    width: 100px;
+    border-color: $active-font;
   }
 }
 </style>

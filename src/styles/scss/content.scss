@@ -102,3 +102,20 @@
     text-transform: uppercase;
   }
 }
+.record__btn {
+  background-color: $bg-color;
+  border-radius: 3px;
+  border: 2px solid $share-bg;
+  padding: 5px;
+}
+
+.record__btn:hover {
+  border: 2px solid $bg-color;
+  color: $more-font;
+  cursor: pointer;
+}
+.record__delete-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

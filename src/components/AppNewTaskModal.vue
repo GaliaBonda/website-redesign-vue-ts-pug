@@ -1,25 +1,27 @@
 <template lang="pug">
-form.record-form
-  h2.record-form__title Add new task
-  .record-form__container
-    .record-form__item
-        label.record-form__name-label(for="name") New task name:
-        input.record-form-element.record-form__name(type="text" id="name" v-model="form.name")
-    .record-form__item
-        label.record-form__desc-label(for="desc") New task description:
-        textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50" v-model="form.desc" )
-    .record-form__item
-        label.record-form__date-label(for="date") New task deadline:
-        input.record-form-element.record-form__date(type="date" id="date" v-model="form.date")
-    .record-form__item.record-form__status-item
-        label.record-form__status-label(for="status-todo") TODO
-        input.record-form-element.record-form__status(type="radio" id="status-todo" v-model="form.status" name="status" value='TODO')
-        label.record-form__status-label(for="status-inprogress") INPROGRESS
-        input.record-form-element.record-form__status(type="radio" id="status-inprogress" v-model="form.status" name="status" value='INPROGRESS')
-        label.record-form__status-label(for="status-done") DONE
-        input.record-form-element.record-form__status(type="radio" id="status-done" v-model="form.status" name="status" value='DONE')
-    .record-form__item
-        input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click="addTask")      
+.modal-background
+  form.record-form
+    h2.record-form__title Add new task
+    .record-form__container
+      .record-form__item
+          label.record-form__name-label(for="name") New task name:
+          input.record-form-element.record-form__name(type="text" id="name" v-model="form.name")
+      .record-form__item
+          label.record-form__desc-label(for="desc") New task description: 
+          textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50" v-model="form.desc" )
+      .record-form__item
+          label.record-form__date-label(for="date") New task deadline:
+          input.record-form-element.record-form__date(type="date" id="date" v-model="form.date")
+      .record-form__item.record-form__status-item
+          label.record-form__status-label(for="status-todo") TODO
+            input.record-form-element.record-form__status(type="radio" id="status-todo" v-model="form.status" name="status" value='TODO')
+          label.record-form__status-label(for="status-inprogress") INPROGRESS
+            input.record-form-element.record-form__status(type="radio" id="status-inprogress" v-model="form.status" name="status" value='INPROGRESS')
+          label.record-form__status-label(for="status-done") DONE
+            input.record-form-element.record-form__status(type="radio" id="status-done" v-model="form.status" name="status" value='DONE')
+      .record-form__item
+          input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click="addTask") 
+          button.record__btn(v-on:click="closeModal") Close   
 </template>
 
 <script lang="ts">
@@ -61,6 +63,7 @@ export default defineComponent({
         this.form.desc = '';
         this.form.date = '';
         this.form.status = Status.TODO;
+        this.closeModal();
       } else {
         const blocker = this.createBlocker();
         const errorWindow = this.createWindow(
@@ -78,6 +81,9 @@ export default defineComponent({
         };
       }
     },
+    closeModal() {
+      this.$emit('close-modal');
+    },
   },
 });
 </script>
@@ -88,15 +94,21 @@ export default defineComponent({
 
 .record-form {
   padding: 20px 30px 30px 30px;
+  margin: 20px;
   border-top: 5px solid $bg-color;
   border-bottom: 5px solid $bg-color;
+  background-color: white;
+  width: 700px;
+  z-index: 100;
   &__status-item {
-    flex-direction: column;
     gap: 15px;
   }
   &__status-label {
     display: flex;
     gap: 15px;
+  }
+  &__desc {
+    width: 300px;
   }
 }
 .record-form__title {

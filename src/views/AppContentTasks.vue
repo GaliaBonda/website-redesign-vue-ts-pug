@@ -2,26 +2,37 @@
 .content.main__content
   .content__container
     h2.content__date Today tasks
-    AppNewTaskModal
+    AppNewTaskModal(v-show="modalIsOpen" v-on:close-modal="closeNewTaskModal")
     .content__records
+      button.record__btn(v-on:click="openNewTaskModal") Add new task
       .record.content__record(v-for="(item, index) in this.$store.state.tasks" v-bind:key="item.id")
         h3.record__title {{item.name}}
         .record__info
           p.record__text(v-bind:ref="setItemRef") {{item.desc}}
           p.record__status {{item.status}}
           p.record__date {{item.deadLine}}
+        button.record__btn(v-on:click="openDetailsModal") Details...
         button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
+        TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetailsModal")
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, onUpdated} from 'vue';
 import {useStore} from 'vuex';
 import AppNewTaskModal from '../components/AppNewTaskModal.vue';
+import TaskDetailsModal from '../components/TaskDetailsModal.vue';
 
 export default defineComponent({
   name: 'AppContentTasks',
   components: {
     AppNewTaskModal,
+    TaskDetailsModal,
+  },
+  data() {
+    return {
+      modalIsOpen: false,
+      detailsModalIsOpen: false,
+    };
   },
   setup() {
     const store = useStore();
@@ -58,6 +69,18 @@ export default defineComponent({
   methods: {
     deleteTask(index: number) {
       this.$store.commit('removeTask', index);
+    },
+    openNewTaskModal() {
+      this.modalIsOpen = true;
+    },
+    closeNewTaskModal() {
+      this.modalIsOpen = false;
+    },
+    openDetailsModal() {
+      this.detailsModalIsOpen = true;
+    },
+    closeDetailsModal() {
+      this.detailsModalIsOpen = false;
     },
   },
 });
@@ -105,22 +128,5 @@ export default defineComponent({
   opacity: 0.5;
   font-size: 12px;
   text-transform: uppercase;
-}
-.record__btn {
-  background-color: $bg-color;
-  border-radius: 3px;
-  border: 2px solid $share-bg;
-  padding: 5px;
-}
-
-.record__btn:hover {
-  border: 2px solid $bg-color;
-  color: $more-font;
-  cursor: pointer;
-}
-.record__delete-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
 }
 </style>

@@ -74,7 +74,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   outline: 4px solid $more-bg;
-  min-height: 20vh;
+  min-height: 50vh;
 
   &__item {
     border-left: 8px solid $more-bg;
@@ -90,7 +90,6 @@ export default defineComponent({
 .table {
   width: 100%;
   border: 4px solid $more-bg;
-  border-collapse: collapse;
   opacity: 0.7;
   font-size: 14px;
   &__head-cell {
