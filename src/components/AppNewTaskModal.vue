@@ -8,7 +8,7 @@
           input.record-form-element.record-form__name(type="text" id="name" v-model="form.name")
       .record-form__item
           label.record-form__desc-label(for="desc") New task description: 
-          textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50" v-model="form.desc" )
+          textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50" v-model="form.desc")
       .record-form__item
           label.record-form__date-label(for="date") New task deadline:
           input.record-form-element.record-form__date(type="date" id="date" v-model="form.date")

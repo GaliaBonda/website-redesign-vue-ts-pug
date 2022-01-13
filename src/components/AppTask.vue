@@ -1,9 +1,9 @@
 <template lang="pug">
-.task(v-on:mousedown.stop.prevent="startMoving" v-on:mouseup.stop.prevent="stopMoving" v-on:mousemove="moveCard" v-on:ondragstart.stop.prevent)
+.task(v-on:mousedown.prevent.self="startMoving" v-on:mouseup.prevent.self="stopMoving" v-on:mousemove="moveCard" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
   .task-deadline {{deadLine}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
-  TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
+TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
 </template>
 
 <script lang="ts">
