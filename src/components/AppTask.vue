@@ -1,5 +1,5 @@
 <template lang="pug">
-.task(v-on:mousedown.prevent.self="startMoving" v-on:mouseup.prevent.self="stopMoving" v-on:mousemove="moveCard" v-on:ondragstart.stop.prevent)
+.task(v-on:mousedown.stop.prevent="startMoving"  v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
   .task-deadline {{deadLine}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
@@ -38,41 +38,62 @@ export default defineComponent({
     startMoving(event: MouseEvent) {
       this.$store.commit('changeMouseTracking', true);
       this.$store.commit('trackMouseCoordinates', [event.clientX, event.clientY]);
-      const taskCard = event.currentTarget as HTMLElement;
-      taskCard.style.position = 'absolute';
-      taskCard.style.zIndex = '1000';
-      this.shiftX = event.clientX - taskCard.getBoundingClientRect().left;
-      this.shiftY = event.clientY - taskCard.getBoundingClientRect().top;
+      // const taskCard = event.target as HTMLElement;
+      // taskCard.style.position = 'absolute';
+      // taskCard.style.zIndex = '1000';
+      // this.shiftX = event.clientX - taskCard.getBoundingClientRect().left;
+      // this.shiftY = event.clientY - taskCard.getBoundingClientRect().top;
+      const currentCard = event.currentTarget as HTMLElement;
+      currentCard.style.position = 'absolute';
+      currentCard.style.zIndex = '1000';
+      console.log('currentCard ', currentCard);
+      this.$store.commit('setCurrentCard', {
+        card: currentCard,
+        id: this.id,
+        shiftX: event.clientX - currentCard.getBoundingClientRect().left,
+        shiftY: event.clientY - currentCard.getBoundingClientRect().top,
+      });
+      // this.$emit('move-task-card', {card: currentCard, id: this.id, shiftX: this.shiftX, shiftY: this.shiftY});
       // console.log(this.shiftX, this.shiftY);
     },
-    moveCard(event: MouseEvent) {
-      if (this.$store.state.mouseIsTracked && event.currentTarget) {
-        let mouseCoord = this.$store.state.mouseCoordinates;
-        const taskCard = event.currentTarget as HTMLElement;
-
-        taskCard.style.left = mouseCoord[0] - this.shiftX + 'px';
-        taskCard.style.top = mouseCoord[1] - this.shiftY + 'px';
-        // console.log(mouseCoord[0], mouseCoord[1]);
-        const todoEdge = this.toDoEdge;
-        const inProgressEdge = this.inProgressEdge;
-        if (todoEdge && inProgressEdge) this.relocateCard(mouseCoord, todoEdge, inProgressEdge);
-      }
-    },
-    relocateCard(mouseCoord: [number, number], todoEdge: number, inProgressEdge: number) {
-      if (mouseCoord[0] > todoEdge && mouseCoord[0] < inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.id, status: Status.INPROGRESS});
-      } else if (mouseCoord[0] > inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.id, status: Status.DONE});
-      } else if (mouseCoord[0] < todoEdge) {
-        if (this.status !== Status.DONE) {
-          this.$store.commit('changeTaskStatus', {id: this.id, status: Status.TODO});
-        }
-      }
-    },
-    stopMoving(event: MouseEvent) {
+    stopCardMoving() {
       this.$store.commit('changeMouseTracking', false);
-      const taskCard = event.currentTarget as HTMLElement;
+      const currentCard = this.$store.state.currentCard;
+      currentCard.style.zIndex = '1';
+      this.$store.commit('setCurrentCard', null);
+    },
+    // moveCard(event: MouseEvent) {
+    //   if (this.$store.state.mouseIsTracked && event.currentTarget) {
+    //     let mouseCoord = this.$store.state.mouseCoordinates;
+    //     const taskCard = event.target as HTMLElement;
+    //     console.log(taskCard);
+
+    //     taskCard.style.left = mouseCoord[0] - this.shiftX + 'px';
+    //     taskCard.style.top = mouseCoord[1] - this.shiftY + 'px';
+    //     // console.log(mouseCoord[0], mouseCoord[1]);
+    //     const todoEdge = this.toDoEdge;
+    //     const inProgressEdge = this.inProgressEdge;
+    //     if (todoEdge && inProgressEdge) this.relocateCard(mouseCoord, todoEdge, inProgressEdge);
+    //   }
+    // },
+    // relocateCard(mouseCoord: [number, number], todoEdge: number, inProgressEdge: number) {
+    //   if (mouseCoord[0] > todoEdge && mouseCoord[0] < inProgressEdge) {
+    //     this.$store.commit('changeTaskStatus', {id: this.id, status: Status.INPROGRESS});
+    //   } else if (mouseCoord[0] > inProgressEdge) {
+    //     this.$store.commit('changeTaskStatus', {id: this.id, status: Status.DONE});
+    //   } else if (mouseCoord[0] < todoEdge) {
+    //     if (this.status !== Status.DONE) {
+    //       this.$store.commit('changeTaskStatus', {id: this.id, status: Status.TODO});
+    //     }
+    //   }
+    // },
+    stopMoving(event: MouseEvent) {
+      console.log('stopppp');
+
+      this.$store.commit('changeMouseTracking', false);
+      const taskCard = event.target as HTMLElement;
       taskCard.style.zIndex = '1';
+      this.$store.commit('setCurrentCard', null);
     },
     showDetails() {
       this.detailsModalIsOpen = true;

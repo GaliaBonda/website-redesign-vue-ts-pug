@@ -1,5 +1,5 @@
 <template lang="pug">
-.content.main__content(v-on:mousemove="defineMouseCoord" v-on:mouseup.stop.prevent="this.$store.commit('changeMouseTracking', false);")
+.content.main__content(v-on:mousemove="moveCurrentCard")
   .content__container
     h2.content__date Kanban Board
     .content__records
@@ -46,11 +46,39 @@ export default defineComponent({
     },
   },
   methods: {
-    defineMouseCoord(event: MouseEvent) {
+    // defineMouseCoord(event: MouseEvent) {
+    //   if (this.$store.state.mouseIsTracked) {
+    //     this.$store.commit('trackMouseCoordinates', [event.clientX, event.clientY]);
+    //     // console.log(this.$store.state.mouseCoordinates);
+    //   }
+    // },
+    moveCurrentCard(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
-        this.$store.commit('trackMouseCoordinates', [event.clientX, event.clientY]);
-        // console.log(this.$store.state.mouseCoordinates);
+        const currentCard = this.$store.state.currentCard;
+        const shiftX = this.$store.state.shiftX;
+        const shiftY = this.$store.state.shiftY;
+        // currentCard.style.left = event.clientX - shiftX + 'px';
+        // currentCard.style.top = event.clientY - shiftY + 'px';
+        currentCard.style.left = event.pageX - currentCard.offsetWidth / 2 + 'px';
+        currentCard.style.top = event.pageY - currentCard.offsetHeight / 2 + 'px';
+        if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
       }
+    },
+    relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
+      if (x > todoEdge && x < inProgressEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.INPROGRESS});
+      } else if (x > inProgressEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.DONE});
+      } else if (x < todoEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.TODO});
+      }
+      // this.stopCardMoving();
+    },
+    stopCardMoving() {
+      const currentCard = this.$store.state.currentCard;
+      currentCard.style.zIndex = '1';
+      this.$store.commit('changeMouseTracking', false);
+      this.$store.commit('setCurrentCard', null);
     },
     calculateTableSizes(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked && event.currentTarget) {
