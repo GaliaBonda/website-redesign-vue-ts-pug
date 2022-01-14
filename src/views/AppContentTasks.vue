@@ -7,18 +7,10 @@
       button.record__btn(v-on:click="openNewTaskModal") Add new task
       .record.content__record(v-for="(item, index) in this.$store.state.tasks" v-bind:key="item.id")
         AppContentTask(v-bind:ref="setItemRef" v-bind:name="item.name" v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" v-bind:status="item.status" v-bind:id="item.id")
-        //- h3.record__title {{item.name}}
-        //- .record__info
-        //-   p.record__text(v-bind:ref="setItemRef") {{item.desc}}
-        //-   p.record__status {{item.status}}
-        //-   p.record__date {{item.deadLine}}
-        //- TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetailsModal" v-bind:name="item.name" v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" v-bind:status="item.status" v-bind:id="item.id")
-        //- button.record__btn(v-on:click="openDetailsModal") Details...
-        //- button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, onUpdated} from 'vue';
+import {computed, defineComponent, onBeforeUpdate, onMounted, onUpdated} from 'vue';
 import {useStore} from 'vuex';
 import AppContentTask from '../components/AppContentTask.vue';
 import AppNewTaskModal from '../components/AppNewTaskModal.vue';
@@ -42,28 +34,27 @@ export default defineComponent({
     let stateTasks = computed(function () {
       return store.state.tasks;
     });
-    let itemRefs: HTMLElement[] = [];
+    let itemRefs: any[] = [];
     let tasksNumber: number;
-    const setItemRef = (el: HTMLElement) => {
+    const setItemRef = (el: any) => {
       if (el) {
         itemRefs.push(el);
       }
-    };
-    const animateNewTask = () => {
-      itemRefs[itemRefs.length - 1].classList.add('blink-animation');
     };
     onMounted(() => {
       tasksNumber = stateTasks.value.length;
       itemRefs.forEach((el, index) => {
         const delay = index * 1000;
         setTimeout(() => {
-          el.classList.add('grow-animation');
-          //console.log(el);
+          el.animateRecord();
         }, delay);
       });
     });
+    onBeforeUpdate(() => {
+      itemRefs = [];
+    });
     onUpdated(() => {
-      if (tasksNumber < stateTasks.value.length) animateNewTask();
+      if (tasksNumber < stateTasks.value.length) itemRefs[itemRefs.length - 1].animateNewTask();
       tasksNumber = stateTasks.value.length;
     });
     return {

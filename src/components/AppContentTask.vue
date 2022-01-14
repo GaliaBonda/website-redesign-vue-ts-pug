@@ -2,7 +2,7 @@
 .content__task
   h3.record__title {{name}}
   .record__info
-    p.record__text(v-bind:ref="setItemRef") {{desc}}
+    p.record__text(ref="record") {{desc}}
     p.record__status {{status}}
     p.record__date {{deadLine}}
   .record__btns
@@ -45,6 +45,12 @@ export default defineComponent({
     closeDetails() {
       this.detailsModalIsOpen = false;
     },
+    animateRecord() {
+      (this.$refs.record as HTMLElement).classList.add('grow-animation');
+    },
+    animateNewTask() {
+      (this.$refs.record as HTMLElement).classList.add('blink-animation');
+    },
   },
 });
 </script>
@@ -55,5 +61,38 @@ export default defineComponent({
 .record__btns {
   display: flex;
   justify-content: space-between;
+}
+
+@keyframes grow {
+  0% {
+  }
+  50% {
+    transform: scale(1.15, 1.15);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes blink {
+  0% {
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink-animation {
+  animation-name: blink;
+  animation-duration: 1s;
+  animation-iteration-count: 3;
+}
+
+.grow-animation {
+  animation-name: grow;
+  animation-duration: 2s;
 }
 </style>

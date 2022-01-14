@@ -20,8 +20,8 @@
           label.record-form__status-label(for="status-done") DONE
             input.record-form-element.record-form__status(type="radio" id="status-done" v-model="form.status" name="status" value='DONE')
       .record-form__item
-          input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click="addTask") 
-          button.record__btn(v-on:click="closeModal") Close   
+          input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click.prevent="addTask") 
+          button.record__btn(v-on:click.prevent="closeModal") Close   
 </template>
 
 <script lang="ts">
