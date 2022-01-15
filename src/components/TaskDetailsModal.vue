@@ -12,7 +12,7 @@
       option done
     //- input.record__status(type="select" v-else="editModeIsOn" v-model="taskStatus")
     p.record__date(v-if="!editModeIsOn") {{deadLine}}
-    input.record__date(type="date" v-else="editModeIsOn" v-model="formattedTaskDeadline")
+    input.record__date(type="text" v-else="editModeIsOn" v-model="taskDeadLine")
     button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
     button.record__btn.details-btn(v-else="editModeIsOn" v-on:click="closeModal") Close
     button.record__btn.details-btn(v-show="editModeIsOn" v-on:click="saveChanges") Save  
@@ -58,6 +58,7 @@ export default defineComponent({
       this.editModeIsOn = false;
     },
     openEditMode() {
+      if (this.$store.state.mouseIsTracked) return;
       this.editModeIsOn = true;
     },
     saveChanges() {
@@ -66,7 +67,7 @@ export default defineComponent({
         name: this.taskName,
         desc: this.taskDesc,
         status: Status[this.taskStatus?.toUpperCase() as unknown as keyof typeof Status],
-        deadline: this.taskDeadLine,
+        deadLine: this.taskDeadLine,
       };
       this.$store.commit('changeTask', updatedTask);
       this.closeModal();

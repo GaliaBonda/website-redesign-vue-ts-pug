@@ -18,8 +18,6 @@ export default defineComponent({
   },
   data() {
     return {
-      shiftX: 0,
-      shiftY: 0,
       detailsModalIsOpen: false,
     };
   },
@@ -36,64 +34,33 @@ export default defineComponent({
   },
   methods: {
     startMoving(event: MouseEvent) {
+      if (this.$store.state.mouseIsTracked) return;
       this.$store.commit('changeMouseTracking', true);
-      this.$store.commit('trackMouseCoordinates', [event.clientX, event.clientY]);
-      // const taskCard = event.target as HTMLElement;
-      // taskCard.style.position = 'absolute';
-      // taskCard.style.zIndex = '1000';
-      // this.shiftX = event.clientX - taskCard.getBoundingClientRect().left;
-      // this.shiftY = event.clientY - taskCard.getBoundingClientRect().top;
       const currentCard = event.currentTarget as HTMLElement;
       currentCard.style.position = 'absolute';
       currentCard.style.zIndex = '1000';
-      console.log('currentCard ', currentCard);
       this.$store.commit('setCurrentCard', {
         card: currentCard,
         id: this.id,
-        shiftX: event.clientX - currentCard.getBoundingClientRect().left,
-        shiftY: event.clientY - currentCard.getBoundingClientRect().top,
       });
-      // this.$emit('move-task-card', {card: currentCard, id: this.id, shiftX: this.shiftX, shiftY: this.shiftY});
-      // console.log(this.shiftX, this.shiftY);
     },
-    stopCardMoving() {
+
+    stopCardMoving(event: MouseEvent) {
+      if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
       this.$store.commit('changeMouseTracking', false);
       const currentCard = this.$store.state.currentCard;
       currentCard.style.zIndex = '1';
       this.$store.commit('setCurrentCard', null);
     },
-    // moveCard(event: MouseEvent) {
-    //   if (this.$store.state.mouseIsTracked && event.currentTarget) {
-    //     let mouseCoord = this.$store.state.mouseCoordinates;
-    //     const taskCard = event.target as HTMLElement;
-    //     console.log(taskCard);
-
-    //     taskCard.style.left = mouseCoord[0] - this.shiftX + 'px';
-    //     taskCard.style.top = mouseCoord[1] - this.shiftY + 'px';
-    //     // console.log(mouseCoord[0], mouseCoord[1]);
-    //     const todoEdge = this.toDoEdge;
-    //     const inProgressEdge = this.inProgressEdge;
-    //     if (todoEdge && inProgressEdge) this.relocateCard(mouseCoord, todoEdge, inProgressEdge);
-    //   }
-    // },
-    // relocateCard(mouseCoord: [number, number], todoEdge: number, inProgressEdge: number) {
-    //   if (mouseCoord[0] > todoEdge && mouseCoord[0] < inProgressEdge) {
-    //     this.$store.commit('changeTaskStatus', {id: this.id, status: Status.INPROGRESS});
-    //   } else if (mouseCoord[0] > inProgressEdge) {
-    //     this.$store.commit('changeTaskStatus', {id: this.id, status: Status.DONE});
-    //   } else if (mouseCoord[0] < todoEdge) {
-    //     if (this.status !== Status.DONE) {
-    //       this.$store.commit('changeTaskStatus', {id: this.id, status: Status.TODO});
-    //     }
-    //   }
-    // },
-    stopMoving(event: MouseEvent) {
-      console.log('stopppp');
-
-      this.$store.commit('changeMouseTracking', false);
-      const taskCard = event.target as HTMLElement;
-      taskCard.style.zIndex = '1';
-      this.$store.commit('setCurrentCard', null);
+    relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
+      const currentStatus = this.$store.state.tasks.find((item) => item.id === this.$store.state.id).status;
+      if (x > todoEdge && x < inProgressEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.INPROGRESS});
+      } else if (x > inProgressEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.DONE});
+      } else if (x < todoEdge && currentStatus !== Status.DONE) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.TODO});
+      }
     },
     showDetails() {
       this.detailsModalIsOpen = true;
