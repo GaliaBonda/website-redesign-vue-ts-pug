@@ -32,7 +32,8 @@ export default createStore({
   state: {
     tasks: initialState,
     mouseIsTracked: false,
-    mouseCoordinates: [0, 0],
+    currentCard: null,
+    id: 0,
   },
   mutations: {
     addNewTask(state, payload: Task) {
@@ -42,17 +43,33 @@ export default createStore({
       state.tasks.splice(index, 1);
     },
     changeTaskStatus(state, payload: {id: number; status: Status}) {
-      // const currentTask = state.tasks.find((item: Task) => item.id === payload.id);
-      // if (currentTask) currentTask.status = payload.status;
       state.tasks.map((item) => {
-        if (item.id === payload.id) item.status = payload.status;
+        if (item.id === payload.id) {
+          item.status = payload.status;
+        }
       });
+    },
+    changeTask(state, payload: Task) {
+      state.tasks.map((item) => {
+        if (item.id === payload.id) {
+          item.name = payload.name;
+          item.desc = payload.desc;
+          item.status = payload.status;
+          item.deadLine = payload.deadLine;
+        }
+      });
+    },
+    setCurrentCard(state, payload) {
+      if (payload) {
+        state.currentCard = payload.card;
+        state.id = payload.id;
+      } else {
+        state.currentCard = null;
+        state.id = 0;
+      }
     },
     changeMouseTracking(state, payload: boolean) {
       state.mouseIsTracked = payload;
-    },
-    trackMouseCoordinates(state, payload: [number, number]) {
-      state.mouseCoordinates = payload;
     },
   },
   actions: {},

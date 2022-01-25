@@ -1,9 +1,9 @@
 <template lang="pug">
-.task(v-on:mousedown.stop.prevent="startMoving" v-on:mouseup.stop.prevent="stopMoving" v-on:mousemove="moveCard" v-on:ondragstart.stop.prevent)
+.task(v-on:mousedown.stop.prevent="startMoving"  v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
   .task-deadline {{deadLine}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
-  TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails")
+TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
 </template>
 
 <script lang="ts">
@@ -18,8 +18,6 @@ export default defineComponent({
   },
   data() {
     return {
-      shiftX: 0,
-      shiftY: 0,
       detailsModalIsOpen: false,
     };
   },
@@ -36,43 +34,33 @@ export default defineComponent({
   },
   methods: {
     startMoving(event: MouseEvent) {
+      if (this.$store.state.mouseIsTracked) return;
       this.$store.commit('changeMouseTracking', true);
-      this.$store.commit('trackMouseCoordinates', [event.clientX, event.clientY]);
-      const taskCard = event.currentTarget as HTMLElement;
-      taskCard.style.position = 'absolute';
-      taskCard.style.zIndex = '1000';
-      this.shiftX = event.clientX - taskCard.getBoundingClientRect().left;
-      this.shiftY = event.clientY - taskCard.getBoundingClientRect().top;
-      // console.log(this.shiftX, this.shiftY);
+      const currentCard = event.currentTarget as HTMLElement;
+      currentCard.style.position = 'absolute';
+      currentCard.style.zIndex = '1000';
+      this.$store.commit('setCurrentCard', {
+        card: currentCard,
+        id: this.id,
+      });
     },
-    moveCard(event: MouseEvent) {
-      if (this.$store.state.mouseIsTracked && event.currentTarget) {
-        let mouseCoord = this.$store.state.mouseCoordinates;
-        const taskCard = event.currentTarget as HTMLElement;
 
-        taskCard.style.left = mouseCoord[0] - this.shiftX + 'px';
-        taskCard.style.top = mouseCoord[1] - this.shiftY + 'px';
-        // console.log(mouseCoord[0], mouseCoord[1]);
-        const todoEdge = this.toDoEdge;
-        const inProgressEdge = this.inProgressEdge;
-        if (todoEdge && inProgressEdge) this.relocateCard(mouseCoord, todoEdge, inProgressEdge);
-      }
-    },
-    relocateCard(mouseCoord: [number, number], todoEdge: number, inProgressEdge: number) {
-      if (mouseCoord[0] > todoEdge && mouseCoord[0] < inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.id, status: Status.INPROGRESS});
-      } else if (mouseCoord[0] > inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.id, status: Status.DONE});
-      } else if (mouseCoord[0] < todoEdge) {
-        if (this.status !== Status.DONE) {
-          this.$store.commit('changeTaskStatus', {id: this.id, status: Status.TODO});
-        }
-      }
-    },
-    stopMoving(event: MouseEvent) {
+    stopCardMoving(event: MouseEvent) {
+      if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
       this.$store.commit('changeMouseTracking', false);
-      const taskCard = event.currentTarget as HTMLElement;
-      taskCard.style.zIndex = '1';
+      const currentCard = this.$store.state.currentCard;
+      currentCard.style.zIndex = '1';
+      this.$store.commit('setCurrentCard', null);
+    },
+    relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
+      const currentStatus = this.$store.state.tasks.find((item) => item.id === this.$store.state.id).status;
+      if (x > todoEdge && x < inProgressEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.INPROGRESS});
+      } else if (x > inProgressEdge) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.DONE});
+      } else if (x < todoEdge && currentStatus !== Status.DONE) {
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.TODO});
+      }
     },
     showDetails() {
       this.detailsModalIsOpen = true;

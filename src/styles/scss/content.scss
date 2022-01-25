@@ -114,8 +114,15 @@
   color: $more-font;
   cursor: pointer;
 }
-.record__delete-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+// .record__delete-btn {
+//   position: absolute;
+//   bottom: 0;
+//   right: 0;
+// }
+
+.record__title {
+  padding: 10px;
+  opacity: 0.5;
+  font-size: 12px;
+  text-transform: uppercase;
 }
