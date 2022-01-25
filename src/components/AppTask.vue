@@ -1,5 +1,5 @@
 <template lang="pug">
-.task(v-on:mousedown.stop.prevent="startMoving"  v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
+.task(v-bind:class="[taskClass, {expired: isExpired}, {attention: isUnderAttention}]" v-on:mousedown.stop.prevent="startMoving"  v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
   .task-deadline {{deadLine}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
@@ -31,6 +31,46 @@ export default defineComponent({
     },
     toDoEdge: Number,
     inProgressEdge: Number,
+  },
+  computed: {
+    taskClass() {
+      let taskStyle = '';
+      switch (this.status) {
+        case Status.TODO:
+          taskStyle = 'todo';
+          break;
+        case Status.INPROGRESS:
+          taskStyle = 'inprogress';
+          break;
+        case Status.DONE:
+          taskStyle = 'done';
+          break;
+      }
+      return taskStyle;
+    },
+    date() {
+      if (!this.deadLine) return this.deadLine;
+      const day = Number.parseInt(this.deadLine.slice(0, 2));
+      const month = Number.parseInt(this.deadLine.slice(3, 5)) - 1;
+      const year = Number.parseInt(this.deadLine.slice(6));
+      const date = new Date(year, month, day);
+      return date;
+    },
+    isExpired() {
+      if (!this.date) return false;
+      const todayDate = new Date();
+      const difference = +this.date - +todayDate;
+      if (difference < 0) return true;
+      return false;
+    },
+    isUnderAttention() {
+      const oneDayInMs = 86400000;
+      if (!this.date) return false;
+      const todayDate = new Date();
+      const diff = +this.date - +todayDate;
+      if (diff >= 0 && Math.abs(diff) <= oneDayInMs) return true;
+      return false;
+    },
   },
   methods: {
     startMoving(event: MouseEvent) {
@@ -97,5 +137,21 @@ export default defineComponent({
     width: 100px;
     border-color: $active-font;
   }
+}
+
+.todo {
+  background-color: $todo-bg;
+}
+.inprogress {
+  background-color: $inprogress-bg;
+}
+.done {
+  background-color: $done-bg;
+}
+.expired {
+  box-shadow: 0px 0px 15px 2px $expired-shadow;
+}
+.attention {
+  box-shadow: 0px 0px 15px 2px $attention-shadow;
 }
 </style>

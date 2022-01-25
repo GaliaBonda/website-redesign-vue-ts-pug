@@ -51,18 +51,8 @@ export default defineComponent({
         const currentCard = this.$store.state.currentCard;
         currentCard.style.left = event.pageX - currentCard.offsetWidth / 2 + 'px';
         currentCard.style.top = event.pageY - currentCard.offsetHeight / 2 + 'px';
-        // if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
       }
     },
-    // relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
-    //   if (x > todoEdge && x < inProgressEdge) {
-    //     this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.INPROGRESS});
-    //   } else if (x > inProgressEdge) {
-    //     this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.DONE});
-    //   } else if (x < todoEdge) {
-    //     this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.TODO});
-    //   }
-    // },
     calculateTableSizes(event: MouseEvent) {
       if (event.currentTarget) {
         const kanbanTable = event.currentTarget as HTMLElement;

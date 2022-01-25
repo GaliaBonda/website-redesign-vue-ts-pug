@@ -10,7 +10,6 @@
       option todo
       option inprogress
       option done
-    //- input.record__status(type="select" v-else="editModeIsOn" v-model="taskStatus")
     p.record__date(v-if="!editModeIsOn") {{deadLine}}
     input.record__date(type="text" v-else="editModeIsOn" v-model="taskDeadLine")
     button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
