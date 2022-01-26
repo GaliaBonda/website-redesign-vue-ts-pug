@@ -3,6 +3,9 @@
   .content__container
     h2.content__date Kanban Board
     .content__records
+      .content__search
+        label.search-label Task name search:
+          input.search(type="text" v-model="taskName")
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
           AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
@@ -23,6 +26,7 @@ export default defineComponent({
     return {
       toDoEdge: 0,
       inProgressEdge: 0,
+      taskName: '',
     };
   },
   computed: {
@@ -38,11 +42,29 @@ export default defineComponent({
     doneTasks(): Task[] {
       return this.$store.state.tasks.filter((item) => item.status === Status.DONE);
     },
+    // filteredKanbanTasks: {
+    //   get(): Task[][] | {status: Status}[][] {
+    //     const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
+    //     const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
+    //     const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
+    //     return [toDoArray, inProgressArray, doneArray];
+    //   },
+    //   set(newVal) {
+    //     const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
+    //     const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
+    //     const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
+    //   },
+    // },
     filteredKanbanTasks(): Task[][] | {status: Status}[][] {
       const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
       const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
       const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
       return [toDoArray, inProgressArray, doneArray];
+    },
+  },
+  watch: {
+    taskName(val, oldVal) {
+      this.$store.commit('filterTasksByNames', val);
     },
   },
   methods: {
@@ -103,5 +125,19 @@ export default defineComponent({
     display: block;
     font-weight: bold;
   }
+}
+
+.search-label {
+  opacity: 0.7;
+  font-size: 16px;
+}
+
+.search {
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  padding: 5px;
+  border: none;
+  outline: 4px solid $more-bg;
 }
 </style>

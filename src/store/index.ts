@@ -13,7 +13,7 @@ const initialState: Task[] = [
   {
     name: 'Analysis of requirements and outcomes',
     desc: 'Evaluate the product design and development against project requirements and outcomes',
-    deadLine: '26.01.2022',
+    deadLine: '27.01.2022',
     id: 2,
     status: Status.INPROGRESS,
   },
@@ -39,6 +39,9 @@ export default createStore({
     },
     removeTask(state, index: number) {
       state.tasks.splice(index, 1);
+    },
+    filterTasksByNames(state, name: string) {
+      state.tasks = state.tasks.filter((item) => item.name.includes(name));
     },
     changeTaskStatus(state, payload: {id: number; status: Status}) {
       state.tasks.map((item) => {
