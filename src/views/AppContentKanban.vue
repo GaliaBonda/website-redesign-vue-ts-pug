@@ -6,9 +6,11 @@
       .content__search
         label.search-label Task name search:
           input.search(type="text" v-model="taskName")
-        .content-search__calendar(v-on:click="openCalendar") 
+        .content-search__calendar(v-on:click="toggleCalendar") 
           p.calendar-search__label.search-label Calendar search:
-          DatePicker.calendar(v-model="range" is-range v-if="calendarIsOpen")
+          .calendar(v-if="calendarIsOpen")
+            DatePicker.calendar__date-picker(v-model="range" is-range )
+            button.calendar-btn.record__btn(v-on:click="filterTasksByDeadline") Filter by deadline
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
           AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
@@ -45,7 +47,7 @@ export default defineComponent({
       return this.$store.state.tasks;
     },
     searchedTasks(): Task[] {
-      return this.taskName.length > 0 || this.range.start < this.range.end ? this.filterTasks() : this.stateTasks;
+      return this.taskName.length > 0 ? this.filterTasksByName() : this.stateTasks;
     },
     toDoTasks(): Task[] {
       return this.searchedTasks.filter((item) => item.status === Status.TODO);
@@ -71,7 +73,7 @@ export default defineComponent({
     },
   },
   methods: {
-    filterTasks() {
+    filterTasksByName() {
       return this.stateTasks.filter((item) => item.name.includes(this.taskName));
     },
     moveCurrentCard(event: MouseEvent) {
@@ -89,8 +91,12 @@ export default defineComponent({
         this.inProgressEdge = this.toDoEdge + kanbanTableWidth / 3;
       }
     },
-    openCalendar() {
-      this.calendarIsOpen = true;
+    toggleCalendar() {
+      this.calendarIsOpen = !this.calendarIsOpen;
+    },
+    filterTasksByDeadline() {
+      this.range.start;
+      this.range.end;
     },
   },
 });
@@ -159,5 +165,29 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.calendar-search__label {
+  padding: 10px;
+  outline: 4px solid $more-bg;
+  margin-bottom: 20px;
+  background-color: $more-bg;
+}
+
+.calendar-search__label:hover {
+  background-color: white;
+  color: $active-font;
+  cursor: pointer;
+}
+
+.calendar {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+}
+
+.calendar-btn {
+  display: block;
+  height: 50px;
 }
 </style>
