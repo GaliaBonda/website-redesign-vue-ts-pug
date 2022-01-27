@@ -33,14 +33,19 @@ export default defineComponent({
     stateTasks(): Task[] {
       return this.$store.state.tasks;
     },
+    searchedTasks(): Task[] {
+      return this.taskName.length > 0
+        ? this.stateTasks.filter((item) => item.name.includes(this.taskName))
+        : this.stateTasks;
+    },
     toDoTasks(): Task[] {
-      return this.stateTasks.filter((item) => item.status === Status.TODO);
+      return this.searchedTasks.filter((item) => item.status === Status.TODO);
     },
     inProgressTasks(): Task[] {
-      return this.$store.state.tasks.filter((item) => item.status === Status.INPROGRESS);
+      return this.searchedTasks.filter((item) => item.status === Status.INPROGRESS);
     },
     doneTasks(): Task[] {
-      return this.$store.state.tasks.filter((item) => item.status === Status.DONE);
+      return this.searchedTasks.filter((item) => item.status === Status.DONE);
     },
     // filteredKanbanTasks: {
     //   get(): Task[][] | {status: Status}[][] {
@@ -62,11 +67,11 @@ export default defineComponent({
       return [toDoArray, inProgressArray, doneArray];
     },
   },
-  watch: {
-    taskName(val, oldVal) {
-      this.$store.commit('filterTasksByNames', val);
-    },
-  },
+  // watch: {
+  //   taskName(val, oldVal) {
+  //     this.$store.commit('filterTasksByNames', val);
+  //   },
+  // },
   methods: {
     moveCurrentCard(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
