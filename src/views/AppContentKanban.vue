@@ -6,6 +6,9 @@
       .content__search
         label.search-label Task name search:
           input.search(type="text" v-model="taskName")
+        .content-search__calendar(v-on:click="openCalendar") 
+          p.calendar-search__label.search-label Calendar search:
+          DatePicker.calendar(v-model="range" is-range v-if="calendarIsOpen")
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
           AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
@@ -16,17 +19,25 @@ import Status from '@/interfaces/status.interface';
 import Task from '@/interfaces/task.interface';
 import {defineComponent} from 'vue';
 import AppKanbanTasks from '../components/AppKanbanTasks.vue';
+import {Calendar, DatePicker} from 'v-calendar';
 
 export default defineComponent({
   name: 'AppContentKanban',
   components: {
     AppKanbanTasks,
+    Calendar,
+    DatePicker,
   },
   data() {
     return {
       toDoEdge: 0,
       inProgressEdge: 0,
       taskName: '',
+      calendarIsOpen: false,
+      range: {
+        start: new Date(2020, 0, 1),
+        end: new Date(2020, 0, 1),
+      },
     };
   },
   computed: {
@@ -34,9 +45,7 @@ export default defineComponent({
       return this.$store.state.tasks;
     },
     searchedTasks(): Task[] {
-      return this.taskName.length > 0
-        ? this.stateTasks.filter((item) => item.name.includes(this.taskName))
-        : this.stateTasks;
+      return this.taskName.length > 0 || this.range.start < this.range.end ? this.filterTasks() : this.stateTasks;
     },
     toDoTasks(): Task[] {
       return this.searchedTasks.filter((item) => item.status === Status.TODO);
@@ -47,19 +56,6 @@ export default defineComponent({
     doneTasks(): Task[] {
       return this.searchedTasks.filter((item) => item.status === Status.DONE);
     },
-    // filteredKanbanTasks: {
-    //   get(): Task[][] | {status: Status}[][] {
-    //     const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
-    //     const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
-    //     const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
-    //     return [toDoArray, inProgressArray, doneArray];
-    //   },
-    //   set(newVal) {
-    //     const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
-    //     const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
-    //     const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
-    //   },
-    // },
     filteredKanbanTasks(): Task[][] | {status: Status}[][] {
       const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
       const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
@@ -67,12 +63,17 @@ export default defineComponent({
       return [toDoArray, inProgressArray, doneArray];
     },
   },
-  // watch: {
-  //   taskName(val, oldVal) {
-  //     this.$store.commit('filterTasksByNames', val);
-  //   },
-  // },
+  watch: {
+    range(val, oldVal) {
+      console.log(val.start);
+      console.log(val.end);
+      console.log(val.start < val.end);
+    },
+  },
   methods: {
+    filterTasks() {
+      return this.stateTasks.filter((item) => item.name.includes(this.taskName));
+    },
     moveCurrentCard(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
         const currentCard = this.$store.state.currentCard;
@@ -87,6 +88,9 @@ export default defineComponent({
         this.toDoEdge = kanbanTable.getBoundingClientRect().left + kanbanTableWidth / 3;
         this.inProgressEdge = this.toDoEdge + kanbanTableWidth / 3;
       }
+    },
+    openCalendar() {
+      this.calendarIsOpen = true;
     },
   },
 });
@@ -144,5 +148,16 @@ export default defineComponent({
   padding: 5px;
   border: none;
   outline: 4px solid $more-bg;
+}
+
+.content__search {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.content-search__calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
