@@ -6,11 +6,13 @@
       .content__search
         label.search-label Task name search:
           input.search(type="text" v-model="taskName")
-        .content-search__calendar(v-on:click="toggleCalendar") 
-          p.calendar-search__label.search-label Calendar search:
+        .content-search__calendar 
+          p.calendar-search__label.search-label(v-on:click="openCalendar") Calendar search:
           .calendar(v-if="calendarIsOpen")
             DatePicker.calendar__date-picker(v-model="range" is-range )
-            button.calendar-btn.record__btn(v-on:click="filterTasksByDeadline") Filter by deadline
+            button.calendar-btn.record__btn(v-on:click="runCalendarSearch") Filter by deadline
+            button.calendar-btn.record__btn(v-on:click="disableCalendarSearch") Show all tasks
+            button.calendar-btn.record__btn.close-btn(v-on:click="closeCalendar") x
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
           AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
@@ -37,9 +39,10 @@ export default defineComponent({
       taskName: '',
       calendarIsOpen: false,
       range: {
-        start: new Date(2020, 0, 1),
-        end: new Date(2020, 0, 1),
+        start: new Date(),
+        end: new Date(),
       },
+      calendarSearchIsOn: false,
     };
   },
   computed: {
@@ -47,7 +50,20 @@ export default defineComponent({
       return this.$store.state.tasks;
     },
     searchedTasks(): Task[] {
-      return this.taskName.length > 0 ? this.filterTasksByName() : this.stateTasks;
+      let filteredTasks = this.stateTasks.filter((item) =>
+        item.name.toLowerCase().includes(this.taskName.toLowerCase()),
+      );
+      if (this.calendarSearchIsOn) {
+        filteredTasks = filteredTasks.filter((item) => {
+          const day = Number.parseInt(item.deadLine.slice(0, 2));
+          const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
+          const year = Number.parseInt(item.deadLine.slice(6));
+          const date = new Date(year, month, day);
+          console.log(date >= this.range.start);
+          return date >= this.range.start && date <= this.range.end;
+        });
+      }
+      return filteredTasks;
     },
     toDoTasks(): Task[] {
       return this.searchedTasks.filter((item) => item.status === Status.TODO);
@@ -65,16 +81,22 @@ export default defineComponent({
       return [toDoArray, inProgressArray, doneArray];
     },
   },
-  watch: {
-    range(val, oldVal) {
-      console.log(val.start);
-      console.log(val.end);
-      console.log(val.start < val.end);
-    },
-  },
   methods: {
-    filterTasksByName() {
-      return this.stateTasks.filter((item) => item.name.includes(this.taskName));
+    filterTasks() {
+      let filteredTasks = this.stateTasks.filter((item) => item.name.includes(this.taskName));
+      console.log(this.taskName);
+
+      if (this.calendarSearchIsOn) {
+        filteredTasks = filteredTasks.filter((item) => {
+          const day = Number.parseInt(item.deadLine.slice(0, 2));
+          const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
+          const year = Number.parseInt(item.deadLine.slice(6));
+          const date = new Date(year, month, day);
+          console.log(date >= this.range.start);
+          return date >= this.range.start && date <= this.range.end;
+        });
+      }
+      return filteredTasks;
     },
     moveCurrentCard(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
@@ -91,12 +113,17 @@ export default defineComponent({
         this.inProgressEdge = this.toDoEdge + kanbanTableWidth / 3;
       }
     },
-    toggleCalendar() {
-      this.calendarIsOpen = !this.calendarIsOpen;
+    openCalendar() {
+      this.calendarIsOpen = true;
     },
-    filterTasksByDeadline() {
-      this.range.start;
-      this.range.end;
+    closeCalendar() {
+      this.calendarIsOpen = false;
+    },
+    runCalendarSearch() {
+      this.calendarSearchIsOn = true;
+    },
+    disableCalendarSearch() {
+      this.calendarSearchIsOn = false;
     },
   },
 });
@@ -184,10 +211,22 @@ export default defineComponent({
   display: flex;
   gap: 50px;
   align-items: center;
+  position: relative;
 }
 
 .calendar-btn {
   display: block;
   height: 50px;
+}
+
+.close-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 35px;
+  width: 35px;
+  font-family: Arial, Helvetica, sans-serif;
+  opacity: 0.7;
+  font-size: 20px;
 }
 </style>

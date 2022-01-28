@@ -128,7 +128,7 @@ export default defineComponent({
 .task {
   background-color: $bg-color;
   padding: 5px;
-  width: 13vw;
+  width: calc(max(13vw, 150px));
   display: flex;
   flex-direction: column;
   gap: 10px;

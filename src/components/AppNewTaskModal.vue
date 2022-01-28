@@ -27,10 +27,11 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import Status from '../interfaces/status.interface';
-import {createWindow, createButton, createBtnBlock, createBlocker} from '../scripts/createMessageWindow';
+import {createMessage} from '../mixins/createMessage';
 
 export default defineComponent({
   name: 'AppNewTaskModal',
+  mixins: [createMessage],
   data() {
     return {
       form: {
@@ -42,10 +43,6 @@ export default defineComponent({
     };
   },
   methods: {
-    createWindow,
-    createButton,
-    createBtnBlock,
-    createBlocker,
     addTask(e: Event) {
       e.preventDefault();
       const formattedDate = new Date(this.form.date).toLocaleDateString();
