@@ -10,7 +10,7 @@
           p.calendar-search__label.search-label(v-on:click="openCalendar") Calendar search:
           .calendar(v-if="calendarIsOpen")
             DatePicker.calendar__date-picker(v-model="range" is-range )
-            button.calendar-btn.record__btn(v-on:click="runCalendarSearch") Filter by deadline
+            
             button.calendar-btn.record__btn(v-on:click="disableCalendarSearch") Show all tasks
             button.calendar-btn.record__btn.close-btn(v-on:click="closeCalendar") x
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
@@ -101,8 +101,10 @@ export default defineComponent({
     moveCurrentCard(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
         const currentCard = this.$store.state.currentCard;
-        currentCard.style.left = event.pageX - currentCard.offsetWidth / 2 + 'px';
-        currentCard.style.top = event.pageY - currentCard.offsetHeight / 2 + 'px';
+        if (currentCard) {
+          currentCard.style.left = event.pageX - currentCard.offsetWidth / 2 + 'px';
+          currentCard.style.top = event.pageY - currentCard.offsetHeight / 2 + 'px';
+        }
       }
     },
     calculateTableSizes(event: MouseEvent) {
@@ -120,10 +122,15 @@ export default defineComponent({
       this.calendarIsOpen = false;
     },
     runCalendarSearch() {
-      this.calendarSearchIsOn = true;
+      this.calendarSearchIsOn = !this.calendarSearchIsOn;
     },
     disableCalendarSearch() {
       this.calendarSearchIsOn = false;
+    },
+  },
+  watch: {
+    range(newVal, oldVal) {
+      this.calendarSearchIsOn = true;
     },
   },
 });

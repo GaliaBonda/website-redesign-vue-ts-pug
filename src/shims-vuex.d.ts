@@ -5,7 +5,7 @@ declare module '@vue/runtime-core' {
   interface State {
     tasks: Task[];
     mouseIsTracked: boolean;
-    currentCard: HTMLElement;
+    currentCard: HTMLElement | null;
     id: number;
   }
 

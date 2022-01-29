@@ -98,8 +98,10 @@ export default defineComponent({
       if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
       this.$store.commit('changeMouseTracking', false);
       const currentCard = this.$store.state.currentCard;
-      currentCard.style.zIndex = '1';
-      this.$store.commit('setCurrentCard', null);
+      if (currentCard) {
+        currentCard.style.zIndex = '1';
+        this.$store.commit('setCurrentCard', null);
+      }
     },
     relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
       const currentStatus = this.$store.state.tasks.find((item) => item.id === this.$store.state.id).status;
