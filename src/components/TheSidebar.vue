@@ -158,12 +158,13 @@ section.sidebar
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import makeActive from '../scripts/makeActive';
-import {createWindow, createBtnBlock, createButton, createBlocker} from '../scripts/createMessageWindow';
+import {createMessage} from '../mixins/createMessage';
+import {makeElementActive} from '../mixins/makeElementActive';
 
 export default defineComponent({
   name: 'TheSidebar',
-  data(): Record<string, unknown> {
+  mixins: [createMessage, makeElementActive],
+  data() {
     return {
       userName: 'Jean Gonzales',
       status: 'Product Owner',
@@ -174,11 +175,6 @@ export default defineComponent({
     };
   },
   methods: {
-    makeActive,
-    createWindow,
-    createBtnBlock,
-    createButton,
-    createBlocker,
     makeTasksActive(e: Event): void {
       const currentElement = e.target as HTMLElement;
       if (currentElement.id === 'completed_tasks' || currentElement.id === 'open_tasks') {

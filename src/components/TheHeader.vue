@@ -28,10 +28,11 @@ header.header
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import makeActive from '../scripts/makeActive';
+import {makeElementActive} from '../mixins/makeElementActive';
 
 export default defineComponent({
   name: 'TheHeader',
+  mixins: [makeElementActive],
   data(): Record<string, unknown> {
     return {
       socialImages: [

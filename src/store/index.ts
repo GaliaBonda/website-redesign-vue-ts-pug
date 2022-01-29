@@ -2,7 +2,6 @@ import {createStore} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
 import {State} from 'vue';
-import {IfStatement} from '@vue/compiler-core';
 
 const initialState: Task[] = [
   {
@@ -15,41 +14,46 @@ const initialState: Task[] = [
   {
     name: 'Analysis of requirements and outcomes',
     desc: 'Evaluate the product design and development against project requirements and outcomes',
-    deadLine: '14.12.2021',
+    deadLine: '27.01.2022',
     id: 2,
     status: Status.INPROGRESS,
   },
   {
     name: 'Application Testing',
     desc: 'Identify errors in a website, provide unit, system and functional testing',
-    deadLine: '21.11.2021',
+    deadLine: '21.11.2022',
     id: 3,
     status: Status.DONE,
   },
 ];
 
 export default createStore({
-  state: {
-    tasks: initialState,
-    mouseIsTracked: false,
-    currentCard: null,
-    id: 0,
+  state(): State {
+    return {
+      tasks: initialState,
+      mouseIsTracked: false,
+      currentCard: null,
+      id: 0,
+    };
   },
   mutations: {
-    addNewTask(state, payload: Task) {
+    addNewTask(state: State, payload: Task) {
       state.tasks.push(payload);
     },
-    removeTask(state, index: number) {
+    removeTask(state: State, index: number) {
       state.tasks.splice(index, 1);
     },
-    changeTaskStatus(state, payload: {id: number; status: Status}) {
+    filterTasksByNames(state: State, name: string) {
+      state.tasks = state.tasks.filter((item) => item.name.includes(name));
+    },
+    changeTaskStatus(state: State, payload: {id: number; status: Status}) {
       state.tasks.map((item) => {
         if (item.id === payload.id) {
           item.status = payload.status;
         }
       });
     },
-    changeTask(state, payload: Task) {
+    changeTask(state: State, payload: Task) {
       state.tasks.map((item) => {
         if (item.id === payload.id) {
           item.name = payload.name;
@@ -59,7 +63,7 @@ export default createStore({
         }
       });
     },
-    setCurrentCard(state, payload) {
+    setCurrentCard(state: State, payload) {
       if (payload) {
         state.currentCard = payload.card;
         state.id = payload.id;
@@ -68,7 +72,7 @@ export default createStore({
         state.id = 0;
       }
     },
-    changeMouseTracking(state, payload: boolean) {
+    changeMouseTracking(state: State, payload: boolean) {
       state.mouseIsTracked = payload;
     },
   },
