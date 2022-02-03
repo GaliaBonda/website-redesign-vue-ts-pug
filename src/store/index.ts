@@ -58,6 +58,12 @@ const mainModule: Module<any, unknown> = {
         }
       });
     },
+    initialiseStore(state) {
+      const mainState = localStorage.getItem('main');
+      if (mainState) {
+        state = Object.assign(state, JSON.parse(mainState));
+      }
+    },
   },
   actions: {},
   getters: {},
