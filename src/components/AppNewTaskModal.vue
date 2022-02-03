@@ -53,7 +53,7 @@ export default defineComponent({
           name: this.form.name,
           desc: this.form.desc,
           deadLine: formattedDate,
-          id: this.$store.state.tasks.length + 1,
+          id: this.$store.state.main.tasks.length + 1,
           status: formattedStatus || Status.TODO,
         });
         this.form.name = '';

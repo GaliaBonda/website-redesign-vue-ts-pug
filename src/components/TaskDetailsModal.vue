@@ -57,7 +57,7 @@ export default defineComponent({
       this.editModeIsOn = false;
     },
     openEditMode() {
-      if (this.$store.state.mouseIsTracked) return;
+      if (this.$store.state.moving.mouseIsTracked) return;
       this.editModeIsOn = true;
     },
     saveChanges() {

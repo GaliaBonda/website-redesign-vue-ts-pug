@@ -1,7 +1,7 @@
-import {createStore} from 'vuex';
+import {createStore, Module, Mutation} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
-import {State} from 'vue';
+import {State, StateModules} from 'vue';
 
 const initialState: Task[] = [
   {
@@ -27,15 +27,10 @@ const initialState: Task[] = [
   },
 ];
 
-export default createStore({
-  state(): State {
-    return {
-      tasks: initialState,
-      mouseIsTracked: false,
-      currentCard: null,
-      id: 0,
-    };
-  },
+const mainModule: Module<any, unknown> = {
+  state: () => ({
+    tasks: initialState,
+  }),
   mutations: {
     addNewTask(state: State, payload: Task) {
       state.tasks.push(payload);
@@ -63,7 +58,19 @@ export default createStore({
         }
       });
     },
-    setCurrentCard(state: State, payload) {
+  },
+  actions: {},
+  getters: {},
+};
+
+const cardMovingModule: Module<any, unknown> = {
+  state: () => ({
+    mouseIsTracked: false,
+    currentCard: null,
+    id: 0,
+  }),
+  mutations: {
+    setCurrentCard(state: State, payload: {card: HTMLElement; id: number}) {
       if (payload) {
         state.currentCard = payload.card;
         state.id = payload.id;
@@ -77,5 +84,65 @@ export default createStore({
     },
   },
   actions: {},
-  modules: {},
+  getters: {},
+};
+
+export default createStore<StateModules>({
+  modules: {
+    main: mainModule,
+    moving: cardMovingModule,
+  },
 });
+
+// export default createStore({
+//   state(): State {
+//     return {
+//       tasks: initialState,
+//       mouseIsTracked: false,
+//       currentCard: null,
+//       id: 0,
+//     };
+//   },
+//   mutations: {
+//     addNewTask(state: State, payload: Task) {
+//       state.tasks.push(payload);
+//     },
+//     removeTask(state: State, index: number) {
+//       state.tasks.splice(index, 1);
+//     },
+//     filterTasksByNames(state: State, name: string) {
+//       state.tasks = state.tasks.filter((item) => item.name.includes(name));
+//     },
+//     changeTaskStatus(state: State, payload: {id: number; status: Status}) {
+//       state.tasks.map((item) => {
+//         if (item.id === payload.id) {
+//           item.status = payload.status;
+//         }
+//       });
+//     },
+//     changeTask(state: State, payload: Task) {
+//       state.tasks.map((item) => {
+//         if (item.id === payload.id) {
+//           item.name = payload.name;
+//           item.desc = payload.desc;
+//           item.status = payload.status;
+//           item.deadLine = payload.deadLine;
+//         }
+//       });
+//     },
+//     setCurrentCard(state: State, payload) {
+//       if (payload) {
+//         state.currentCard = payload.card;
+//         state.id = payload.id;
+//       } else {
+//         state.currentCard = null;
+//         state.id = 0;
+//       }
+//     },
+//     changeMouseTracking(state: State, payload: boolean) {
+//       state.mouseIsTracked = payload;
+//     },
+//   },
+//   actions: {},
+//   modules: {},
+// });
