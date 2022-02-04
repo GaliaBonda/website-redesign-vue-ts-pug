@@ -84,7 +84,6 @@ export default defineComponent({
   methods: {
     filterTasks() {
       let filteredTasks = this.stateTasks.filter((item) => item.name.includes(this.taskName));
-      // console.log(this.taskName);
 
       if (this.calendarSearchIsOn) {
         filteredTasks = filteredTasks.filter((item) => {

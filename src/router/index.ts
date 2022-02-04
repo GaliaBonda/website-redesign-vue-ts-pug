@@ -30,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/calendar',
     name: 'Calendar',
-    component: () => import('../views/ComingSoon.vue'),
+    component: () => import('../views/AppContentCalendar.vue'),
   },
   {
     path: '/files',

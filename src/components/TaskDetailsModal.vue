@@ -12,9 +12,11 @@
       option done
     p.record__date(v-if="!editModeIsOn") {{deadLine}}
     input.record__date(type="text" v-else="editModeIsOn" v-model="taskDeadLine")
-    button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
-    button.record__btn.details-btn(v-else="editModeIsOn" v-on:click="closeModal") Close
-    button.record__btn.details-btn(v-show="editModeIsOn" v-on:click="saveChanges") Save  
+    .details-btns(v-show="editAllow")
+      button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
+      button.record__btn.details-btn(v-else="editModeIsOn" v-on:click="closeModal") Close
+      button.record__btn.details-btn(v-show="editModeIsOn" v-on:click="saveChanges") Save
+    button.record__btn.details-btn(v-show="!editAllow" v-on:click="closeModal") Close
 </template>
 
 <script lang="ts">
@@ -50,6 +52,7 @@ export default defineComponent({
     status: {
       type: String,
     },
+    editAllow: Boolean,
   },
   methods: {
     closeModal() {

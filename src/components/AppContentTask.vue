@@ -8,7 +8,10 @@
   .record__btns
     button.record__btn(v-on:click="showDetails") Details...
     button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
-  TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
+  TaskDetailsModal(v-show="detailsModalIsOpen" 
+  v-on:close-details-modal="closeDetails" 
+  v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" 
+  v-bind:status="status" v-bind:id="id" v-bind:editAllow="true")
 </template>
 
 <script lang="ts">

@@ -7,11 +7,14 @@ declare module '@vue/runtime-core' {
     mouseIsTracked: boolean;
     currentCard: HTMLElement | null;
     id: number;
+    images: Img[];
+    records: Record[];
   }
 
   interface StateModules {
     main: State;
     moving: State;
+    activity: State;
   }
 
   interface ComponentCustomProperties {
