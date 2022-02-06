@@ -7,9 +7,7 @@
     textarea.record__text.details__text(v-else="editModeIsOn" v-model="taskDesc")
     p.record__status(v-if="!editModeIsOn") {{status}}
     select(v-else="editModeIsOn" v-model="taskStatus")
-      option todo
-      option inprogress
-      option done
+      option(v-for="item in statuses") {{item}}
     p.record__date(v-if="!editModeIsOn") {{formatDate(taskDeadLine)}}
     input.record__date(type="date" v-else="editModeIsOn" v-model="formattedTaskDeadline")
     button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
@@ -31,6 +29,7 @@ export default defineComponent({
       taskDesc: this.desc,
       taskStatus: this.status,
       taskDeadLine: this.deadLine,
+      statuses: [Status.TODO, Status.INPROGRESS, Status.DONE],
     };
   },
   mixins: [formatDate],

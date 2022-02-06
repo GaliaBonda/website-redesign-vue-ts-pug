@@ -48,10 +48,12 @@ export default defineComponent({
       this.detailsModalIsOpen = false;
     },
     animateRecord() {
-      (this.$refs.record as HTMLElement).classList.add('grow-animation');
+      const el = this.$refs.record as HTMLElement;
+      if (el) el.classList.add('grow-animation');
     },
     animateNewTask() {
-      (this.$refs.record as HTMLElement).classList.add('blink-animation');
+      const el = this.$refs.record as HTMLElement;
+      if (el) el.classList.add('blink-animation');
     },
   },
 });
