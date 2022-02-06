@@ -97,18 +97,22 @@ const activityModule: Module<any, unknown> = {
   state: () => ({
     images: [
       {
+        name: "Big City: bird's eye view photo ",
         img: 'record_img_1.png',
         id: 1,
       },
       {
+        name: 'City beach: far horizont',
         img: 'record_img_2.png',
         id: 2,
       },
       {
+        name: 'Lake of unusual form',
         img: 'record_img_3.png',
         id: 3,
       },
       {
+        name: 'Sea picture: inspiring art',
         img: 'record_img_4.png',
         id: 4,
       },
@@ -153,56 +157,3 @@ export default createStore<StateModules>({
     activity: activityModule,
   },
 });
-
-// export default createStore({
-//   state(): State {
-//     return {
-//       tasks: initialState,
-//       mouseIsTracked: false,
-//       currentCard: null,
-//       id: 0,
-//     };
-//   },
-//   mutations: {
-//     addNewTask(state: State, payload: Task) {
-//       state.tasks.push(payload);
-//     },
-//     removeTask(state: State, index: number) {
-//       state.tasks.splice(index, 1);
-//     },
-//     filterTasksByNames(state: State, name: string) {
-//       state.tasks = state.tasks.filter((item) => item.name.includes(name));
-//     },
-//     changeTaskStatus(state: State, payload: {id: number; status: Status}) {
-//       state.tasks.map((item) => {
-//         if (item.id === payload.id) {
-//           item.status = payload.status;
-//         }
-//       });
-//     },
-//     changeTask(state: State, payload: Task) {
-//       state.tasks.map((item) => {
-//         if (item.id === payload.id) {
-//           item.name = payload.name;
-//           item.desc = payload.desc;
-//           item.status = payload.status;
-//           item.deadLine = payload.deadLine;
-//         }
-//       });
-//     },
-//     setCurrentCard(state: State, payload) {
-//       if (payload) {
-//         state.currentCard = payload.card;
-//         state.id = payload.id;
-//       } else {
-//         state.currentCard = null;
-//         state.id = 0;
-//       }
-//     },
-//     changeMouseTracking(state: State, payload: boolean) {
-//       state.mouseIsTracked = payload;
-//     },
-//   },
-//   actions: {},
-//   modules: {},
-// });

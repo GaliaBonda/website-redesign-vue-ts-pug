@@ -35,7 +35,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/files',
     name: 'Files',
-    component: () => import('../views/ComingSoon.vue'),
+    component: () => import('../views/AppContentFiles.vue'),
   },
   {
     path: '/:pathMatch(.*)*',

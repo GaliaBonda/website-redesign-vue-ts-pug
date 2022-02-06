@@ -59,7 +59,6 @@ export default defineComponent({
           const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
           const year = Number.parseInt(item.deadLine.slice(6));
           const date = new Date(year, month, day);
-          console.log(date >= this.range.start);
           return date >= this.range.start && date <= this.range.end;
         });
       }
