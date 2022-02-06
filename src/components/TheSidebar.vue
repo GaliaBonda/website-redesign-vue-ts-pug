@@ -17,12 +17,25 @@ section.sidebar
     .sidebar__tasks
       .sidebar__container
         ul.tasks
-          li.tasks__item(id="completed_tasks" v-on:click="changeTasksCounter" v-on:mouseover="makeTasksActive" v-on:mouseleave="makeTasksNonActive")
+          li.tasks__item(id="completed_tasks" 
+          v-on:click="openMessageModal" 
+          v-on:mouseover="makeTasksActive" 
+          v-on:mouseleave="makeTasksNonActive")
             span.tasks__item-num {{ completedTasks }}
             span.tasks__item-text Completed Tasks
-          li.tasks__item(id="open_tasks" v-on:click="goToTasks"  v-on:mouseover="makeTasksActive" v-on:mouseleave="makeTasksNonActive")
+          AppMessage(v-show="modalIsOpen" v-on:close-message-modal="closeMessageModal" 
+          v-on:change-data="changeTaskCounter"
+          title="Change tasks counter" 
+          v-bind:text="messageText"
+          v-bind:changesAllow="openTasksAvailable")
+          li.tasks__item(id="open_tasks" v-on:click="goToTasks"  
+          v-on:mouseover="makeTasksActive" v-on:mouseleave="makeTasksNonActive")
             span.tasks__item-num {{ openTasks }}
             span.tasks__item-text Open Tasks
+          AppMessage(v-show="declineModalIsOpen" v-on:close-message-modal="closeDeclineModal" 
+          title="Sorry, no can do" 
+          text="There are no open tasks to show."
+          v-bind:changesAllow="false")
 
     .sidebar__navigation
       .sidebar__container
@@ -160,6 +173,7 @@ section.sidebar
 import {defineComponent} from 'vue';
 import {createMessage} from '../mixins/createMessage';
 import {makeElementActive} from '../mixins/makeElementActive';
+import AppMessage from './AppMessage.vue';
 
 export default defineComponent({
   name: 'TheSidebar',
@@ -172,9 +186,35 @@ export default defineComponent({
       completedTasks: 372,
       openTasks: 11,
       notifications: 3,
+      modalIsOpen: false,
+      declineModalIsOpen: false,
     };
   },
+  components: {
+    AppMessage,
+  },
+  computed: {
+    openTasksAvailable() {
+      return this.openTasks > 0;
+    },
+    messageText() {
+      return this.openTasksAvailable
+        ? 'Are you sure you want to change the number of tasks?'
+        : 'You have no open tasks to set complete.';
+    },
+  },
   methods: {
+    changeTaskCounter() {
+      this.completedTasks = (this.completedTasks as number) + 1;
+      this.openTasks = (this.openTasks as number) - 1;
+      this.modalIsOpen = false;
+    },
+    closeMessageModal() {
+      this.modalIsOpen = false;
+    },
+    openMessageModal() {
+      this.modalIsOpen = true;
+    },
     makeTasksActive(e: Event): void {
       const currentElement = e.target as HTMLElement;
       if (currentElement.id === 'completed_tasks' || currentElement.id === 'open_tasks') {
@@ -186,53 +226,15 @@ export default defineComponent({
     makeTasksNonActive(e: Event): void {
       (e.target as HTMLElement).style.outline = 'none';
     },
-    changeTasksCounter(): void {
-      if ((this.openTasks as number) > 0) {
-        this.confirmChange();
-      } else {
-        this.createDeclineWindow('You have no open tasks to set complete.');
-      }
-    },
-    createDeclineWindow(message: string): void {
-      const blocker = this.createBlocker();
-      const declineWindow = this.createWindow(message, 'confirmWindowStyles', 'confirmMessageStyles');
-      blocker.appendChild(declineWindow);
-      const okBtn = this.createButton('Ok', 'btnStyles');
-      const btnBlock = this.createBtnBlock('btnBlockStyles');
-      btnBlock.appendChild(okBtn);
-      declineWindow.appendChild(btnBlock);
-      okBtn.onclick = function () {
-        blocker.remove();
-      };
-    },
-    confirmChange(): void {
-      const blocker = this.createBlocker();
-      const confirmWindow = this.createWindow(
-        'Are you sure you want to change the number of tasks?',
-        'confirmWindowStyles',
-        'confirmMessageStyles',
-      );
-      blocker.appendChild(confirmWindow);
-      const btnBlock = this.createBtnBlock('btnBlockStyles');
-      const yesBtn = this.createButton('Yep', 'btnStyles');
-      const noBtn = this.createButton('Nope', 'btnStyles');
-      btnBlock.appendChild(yesBtn);
-      btnBlock.appendChild(noBtn);
-
-      confirmWindow.appendChild(btnBlock);
-      yesBtn.onclick = () => {
-        this.completedTasks = (this.completedTasks as number) + 1;
-        this.openTasks = (this.openTasks as number) - 1;
-        blocker.remove();
-      };
-      noBtn.onclick = () => blocker.remove();
-    },
     goToTasks(): void {
       if ((this.openTasks as number) > 0) {
         this.$router.push('/tasks');
       } else {
-        this.createDeclineWindow('You have no open tasks.');
+        this.declineModalIsOpen = true;
       }
+    },
+    closeDeclineModal() {
+      this.declineModalIsOpen = false;
     },
   },
   mounted() {
