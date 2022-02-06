@@ -10,14 +10,15 @@
       option todo
       option inprogress
       option done
-    p.record__date(v-if="!editModeIsOn") {{deadLine}}
-    input.record__date(type="text" v-else="editModeIsOn" v-model="taskDeadLine")
+    p.record__date(v-if="!editModeIsOn") {{formatDate(taskDeadLine)}}
+    input.record__date(type="date" v-else="editModeIsOn" v-model="formattedTaskDeadline")
     button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
     button.record__btn.details-btn(v-else="editModeIsOn" v-on:click="closeModal") Close
     button.record__btn.details-btn(v-show="editModeIsOn" v-on:click="saveChanges") Save  
 </template>
 
 <script lang="ts">
+import {formatDate} from '@/mixins/formatDate';
 import {defineComponent} from 'vue';
 import Status from '../interfaces/status.interface';
 
@@ -32,20 +33,31 @@ export default defineComponent({
       taskDeadLine: this.deadLine,
     };
   },
+  mixins: [formatDate],
   computed: {
-    formattedTaskDeadline() {
-      if (!this.deadLine) return this.deadLine;
-      const day = Number.parseInt(this.deadLine.slice(0, 2));
-      const month = Number.parseInt(this.deadLine.slice(3, 5)) - 1;
-      const year = Number.parseInt(this.deadLine.slice(6));
-      const date = new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
-      return this.deadLine ? date : this.deadLine;
+    formattedTaskDeadline: {
+      get() {
+        const day = this.deadLine?.getDate();
+        const month = this.deadLine?.getMonth();
+        const year = this.deadLine?.getFullYear();
+        if (day && month && year) {
+          return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
+        }
+        return this.deadLine;
+      },
+      set(newVal: string) {
+        const day = Number.parseInt(newVal.slice(8));
+        const month = Number.parseInt(newVal.slice(5, 7)) - 1;
+        const year = Number.parseInt(newVal.slice(0, 4));
+        const date: Date = new Date(year, month, day);
+        this.taskDeadLine = date;
+      },
     },
   },
   props: {
     name: String,
     desc: String,
-    deadLine: String,
+    deadLine: Date,
     id: Number,
     status: {
       type: String,

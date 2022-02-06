@@ -3,11 +3,13 @@
   .kanban-tasks-title {{status}}: {{tasks.length}} task{{tasks.length > 1 ? 's' : ''}}
   .kanban-tasks-list
     .kanban-tasks-list__item(v-for="(item, index) in tasks" v-bind:key="index")
-      AppTask(v-if="item.id" v-bind:name="item.name" v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" v-bind:status="item.status" v-bind:id="item.id" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge") 
+      AppTask(v-if="item.id" v-bind:name="item.name" 
+      v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" 
+      v-bind:status="item.status" v-bind:id="item.id" 
+      v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge") 
 </template>
 
 <script lang="ts">
-import Status from '@/interfaces/status.interface';
 import {defineComponent} from 'vue';
 import AppTask from './AppTask.vue';
 

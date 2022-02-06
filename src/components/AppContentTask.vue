@@ -4,7 +4,7 @@
   .record__info
     p.record__text(ref="record") {{desc}}
     p.record__status {{status}}
-    p.record__date {{deadLine}}
+    p.record__date {{formatDate(deadLine)}}
   .record__btns
     button.record__btn(v-on:click="showDetails") Details...
     button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
@@ -13,14 +13,16 @@
 
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
-import {defineComponent} from 'vue';
+import {defineComponent, PropType} from 'vue';
 import TaskDetailsModal from './TaskDetailsModal.vue';
+import {formatDate} from '../mixins/formatDate';
 
 export default defineComponent({
   name: 'AppContentTask',
   components: {
     TaskDetailsModal,
   },
+  mixins: [formatDate],
   data() {
     return {
       detailsModalIsOpen: false,
@@ -29,10 +31,10 @@ export default defineComponent({
   props: {
     name: String,
     desc: String,
-    deadLine: String,
+    deadLine: Date,
     id: Number,
     status: {
-      type: String,
+      type: String as PropType<Status>,
     },
   },
   methods: {

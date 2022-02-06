@@ -11,7 +11,7 @@
           textarea.record-form-element.record-form__desc(id="desc" rows="4" cols="50" v-model="form.desc")
       .record-form__item
           label.record-form__date-label(for="date") New task deadline:
-          input.record-form-element.record-form__date(type="date" id="date" v-model="form.date")
+          input.record-form-element.record-form__date(type="date" id="date" v-model="formattedTaskDeadline")
       .record-form__item.record-form__status-item
           label.record-form__status-label(for="status-todo") TODO
             input.record-form-element.record-form__status(type="radio" id="status-todo" v-model="form.status" name="status" value='TODO')
@@ -37,28 +37,50 @@ export default defineComponent({
       form: {
         name: '',
         desc: '',
-        date: '',
+        date: new Date(),
         status: Status.TODO,
       },
     };
   },
+  computed: {
+    formattedTaskDeadline: {
+      get() {
+        const day = this.form.date?.getDate();
+        const month = this.form.date?.getMonth();
+        const year = this.form.date?.getFullYear();
+        if (day && month && year) {
+          return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
+        }
+        return this.deadLine;
+      },
+      set(newVal: string) {
+        const day = Number.parseInt(newVal.slice(8));
+        const month = Number.parseInt(newVal.slice(5, 7)) - 1;
+        const year = Number.parseInt(newVal.slice(0, 4));
+        const date: Date = new Date(year, month, day);
+        this.form.date = date;
+      },
+    },
+  },
   methods: {
     addTask(e: Event) {
       e.preventDefault();
-      const formattedDate = new Date(this.form.date).toLocaleDateString();
+      // const formattedDate = new Date(this.form.date).toLocaleDateString();
       const formStatus = this.form.status;
       const formattedStatus = Status[formStatus as unknown as keyof typeof Status];
       if (this.form.name && this.form.desc && this.form.date) {
         this.$store.commit('addNewTask', {
           name: this.form.name,
           desc: this.form.desc,
-          deadLine: formattedDate,
+          // deadLine: formattedDate,
+          deadLine: this.form.date,
           id: this.$store.state.tasks.length + 1,
           status: formattedStatus || Status.TODO,
         });
         this.form.name = '';
         this.form.desc = '';
-        this.form.date = '';
+        // this.form.date = '';
+        this.form.date = new Date();
         this.form.status = Status.TODO;
         this.closeModal();
       } else {

@@ -6,7 +6,11 @@
     .content__records
       button.record__btn(v-on:click="openNewTaskModal") Add new task
       .record.content__record(v-for="(item, index) in this.$store.state.tasks" v-bind:key="item.id")
-        AppContentTask(v-bind:ref="setItemRef" v-bind:name="item.name" v-bind:desc="item.desc" v-bind:deadLine="item.deadLine" v-bind:status="item.status" v-bind:id="item.id")
+        AppContentTask(v-bind:ref="setItemRef" 
+        v-bind:name="item.name" 
+        v-bind:desc="item.desc" 
+        v-bind:deadLine="item.deadLine" 
+        v-bind:status="item.status" v-bind:id="item.id")
 </template>
 
 <script lang="ts">

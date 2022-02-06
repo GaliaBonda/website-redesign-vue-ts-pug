@@ -55,12 +55,12 @@ export default defineComponent({
       );
       if (this.calendarSearchIsOn) {
         filteredTasks = filteredTasks.filter((item) => {
-          const day = Number.parseInt(item.deadLine.slice(0, 2));
-          const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
-          const year = Number.parseInt(item.deadLine.slice(6));
-          const date = new Date(year, month, day);
-          console.log(date >= this.range.start);
-          return date >= this.range.start && date <= this.range.end;
+          // const day = Number.parseInt(item.deadLine.slice(0, 2));
+          // const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
+          // const year = Number.parseInt(item.deadLine.slice(6));
+          // const date = new Date(year, month, day);
+          // console.log(date >= this.range.start);
+          return item.deadLine >= this.range.start && item.deadLine <= this.range.end;
         });
       }
       return filteredTasks;
@@ -82,22 +82,22 @@ export default defineComponent({
     },
   },
   methods: {
-    filterTasks() {
-      let filteredTasks = this.stateTasks.filter((item) => item.name.includes(this.taskName));
-      console.log(this.taskName);
+    // filterTasks() {
+    //   let filteredTasks = this.stateTasks.filter((item) => item.name.includes(this.taskName));
+    //   console.log(this.taskName);
 
-      if (this.calendarSearchIsOn) {
-        filteredTasks = filteredTasks.filter((item) => {
-          const day = Number.parseInt(item.deadLine.slice(0, 2));
-          const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
-          const year = Number.parseInt(item.deadLine.slice(6));
-          const date = new Date(year, month, day);
-          console.log(date >= this.range.start);
-          return date >= this.range.start && date <= this.range.end;
-        });
-      }
-      return filteredTasks;
-    },
+    //   if (this.calendarSearchIsOn) {
+    //     filteredTasks = filteredTasks.filter((item) => {
+    //       // const day = Number.parseInt(item.deadLine.slice(0, 2));
+    //       // const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
+    //       // const year = Number.parseInt(item.deadLine.slice(6));
+    //       // const date = new Date(year, month, day);
+    //       // console.log(date >= this.range.start);
+    //       return item.deadLine >= this.range.start && item.deadLine <= this.range.end;
+    //     });
+    //   }
+    //   return filteredTasks;
+    // },
     moveCurrentCard(event: MouseEvent) {
       if (this.$store.state.mouseIsTracked) {
         const currentCard = this.$store.state.currentCard;

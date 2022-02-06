@@ -1,13 +1,17 @@
 <template lang="pug">
-.task(v-bind:class="[taskClass, {expired: isExpired}, {attention: isUnderAttention}]" v-on:mousedown.stop.prevent="startMoving"  v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
+.task(v-bind:class="[taskClass, {expired: isExpired}, {attention: isUnderAttention}]" 
+v-on:mousedown.stop.prevent="startMoving"  
+v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
-  .task-deadline {{formattedDate}}
+  .task-deadline {{formatDate(deadLine)}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
-TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
+TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" 
+v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
 </template>
 
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
+import {formatDate} from '@/mixins/formatDate';
 import {defineComponent} from 'vue';
 import TaskDetailsModal from './TaskDetailsModal.vue';
 
@@ -16,6 +20,7 @@ export default defineComponent({
   components: {
     TaskDetailsModal,
   },
+  mixins: [formatDate],
   data() {
     return {
       detailsModalIsOpen: false,
@@ -24,7 +29,7 @@ export default defineComponent({
   props: {
     name: String,
     desc: String,
-    deadLine: String,
+    deadLine: Date,
     id: Number,
     status: {
       type: String,
@@ -48,35 +53,35 @@ export default defineComponent({
       }
       return taskStyle;
     },
-    date() {
-      if (!this.deadLine) return this.deadLine;
-      const day = Number.parseInt(this.deadLine.slice(0, 2));
-      const month = Number.parseInt(this.deadLine.slice(3, 5)) - 1;
-      const year = Number.parseInt(this.deadLine.slice(6));
-      const date = new Date(year, month, day);
-      return date;
-    },
-    formattedDate() {
-      let options: Intl.DateTimeFormatOptions = {
-        weekday: 'short',
-        year: 'numeric',
-        month: '2-digit',
-        day: 'numeric',
-      };
-      return this.date?.toLocaleString('en', options);
-    },
+    // date() {
+    //   if (!this.deadLine) return this.deadLine;
+    //   const day = Number.parseInt(this.deadLine.slice(0, 2));
+    //   const month = Number.parseInt(this.deadLine.slice(3, 5)) - 1;
+    //   const year = Number.parseInt(this.deadLine.slice(6));
+    //   const date = new Date(year, month, day);
+    //   return date;
+    // },
+    // formattedDate() {
+    //   let options: Intl.DateTimeFormatOptions = {
+    //     weekday: 'short',
+    //     year: 'numeric',
+    //     month: '2-digit',
+    //     day: 'numeric',
+    //   };
+    //   return this.deadLine?.toLocaleString('en', options);
+    // },
     isExpired() {
-      if (!this.date) return false;
+      if (!this.deadLine) return false;
       const todayDate = new Date();
-      const difference = +this.date - +todayDate;
+      const difference = +this.deadLine - +todayDate;
       if (difference < 0) return true;
       return false;
     },
     isUnderAttention() {
       const oneDayInMs = 86400000;
-      if (!this.date) return false;
+      if (!this.deadLine) return false;
       const todayDate = new Date();
-      const diff = +this.date - +todayDate;
+      const diff = +this.deadLine - +todayDate;
       if (diff >= 0 && Math.abs(diff) <= oneDayInMs) return true;
       return false;
     },
