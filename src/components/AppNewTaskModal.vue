@@ -72,7 +72,6 @@ export default defineComponent({
         this.$store.commit('addNewTask', {
           name: this.form.name,
           desc: this.form.desc,
-          // deadLine: formattedDate,
           deadLine: this.form.date,
           id: this.$store.state.tasks.length + 1,
           status: formattedStatus || Status.TODO,
