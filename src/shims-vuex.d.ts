@@ -1,5 +1,5 @@
 import {ComponentCustomProperties} from 'vue';
-import {Store} from 'vuex';
+import {Module, ModuleTree, Store} from 'vuex';
 
 declare module '@vue/runtime-core' {
   interface State {
@@ -7,9 +7,18 @@ declare module '@vue/runtime-core' {
     mouseIsTracked: boolean;
     currentCard: HTMLElement | null;
     id: number;
+    images: Img[];
+    records: Record[];
+  }
+
+  interface StateModules {
+    main: State;
+    moving: State;
+    activity: State;
   }
 
   interface ComponentCustomProperties {
-    $store: Store<State>;
+    // $store: Store<State>;
+    $store: Store<StateModules>;
   }
 }

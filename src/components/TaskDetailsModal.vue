@@ -10,9 +10,11 @@
       option(v-for="item in statuses") {{item}}
     p.record__date(v-if="!editModeIsOn") {{formatDate(taskDeadLine)}}
     input.record__date(type="date" v-else="editModeIsOn" v-model="formattedTaskDeadline")
-    button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
-    button.record__btn.details-btn(v-else="editModeIsOn" v-on:click="closeModal") Close
-    button.record__btn.details-btn(v-show="editModeIsOn" v-on:click="saveChanges") Save  
+    .details-btns(v-show="editAllow")
+      button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
+      button.record__btn.details-btn(v-else="editModeIsOn" v-on:click="closeModal") Close
+      button.record__btn.details-btn(v-show="editModeIsOn" v-on:click="saveChanges") Save
+    button.record__btn.details-btn(v-show="!editAllow" v-on:click="closeModal") Close
 </template>
 
 <script lang="ts">
@@ -61,6 +63,7 @@ export default defineComponent({
     status: {
       type: String,
     },
+    editAllow: Boolean,
   },
   methods: {
     closeModal() {
@@ -68,7 +71,7 @@ export default defineComponent({
       this.editModeIsOn = false;
     },
     openEditMode() {
-      if (this.$store.state.mouseIsTracked) return;
+      if (this.$store.state.moving.mouseIsTracked) return;
       this.editModeIsOn = true;
     },
     saveChanges() {

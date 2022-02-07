@@ -10,6 +10,9 @@ export default defineComponent({
   components: {
     AppLayout,
   },
+  beforeMount() {
+    this.$store.commit('initialiseStore');
+  },
 });
 </script>
 

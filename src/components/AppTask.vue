@@ -5,8 +5,12 @@ v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
   .task-name {{name}}
   .task-deadline {{formatDate(deadLine)}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
-TaskDetailsModal(v-show="detailsModalIsOpen" v-on:close-details-modal="closeDetails" 
-v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" v-bind:status="status" v-bind:id="id")
+TaskDetailsModal(v-show="detailsModalIsOpen" 
+v-on:close-details-modal="closeDetails" 
+v-bind:name="name" 
+v-bind:desc="desc" v-bind:deadLine="deadLine" 
+v-bind:status="status" v-bind:id="id"
+v-bind:editAllow="true")
 </template>
 
 <script lang="ts">
@@ -88,7 +92,7 @@ export default defineComponent({
   },
   methods: {
     startMoving(event: MouseEvent) {
-      if (this.$store.state.mouseIsTracked) return;
+      if (this.$store.state.moving.mouseIsTracked) return;
       this.$store.commit('changeMouseTracking', true);
       const currentCard = event.currentTarget as HTMLElement;
       currentCard.style.position = 'absolute';
@@ -102,20 +106,20 @@ export default defineComponent({
     stopCardMoving(event: MouseEvent) {
       if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
       this.$store.commit('changeMouseTracking', false);
-      const currentCard = this.$store.state.currentCard;
+      const currentCard = this.$store.state.moving.currentCard;
       if (currentCard) {
         currentCard.style.zIndex = '1';
         this.$store.commit('setCurrentCard', null);
       }
     },
     relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
-      const currentStatus = this.$store.state.tasks.find((item) => item.id === this.$store.state.id).status;
+      const currentStatus = this.$store.state.main.tasks.find((item) => item.id === this.$store.state.moving.id).status;
       if (x > todoEdge && x < inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.INPROGRESS});
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.moving.id, status: Status.INPROGRESS});
       } else if (x > inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.DONE});
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.moving.id, status: Status.DONE});
       } else if (x < todoEdge && currentStatus !== Status.DONE) {
-        this.$store.commit('changeTaskStatus', {id: this.$store.state.id, status: Status.TODO});
+        this.$store.commit('changeTaskStatus', {id: this.$store.state.moving.id, status: Status.TODO});
       }
     },
     showDetails() {

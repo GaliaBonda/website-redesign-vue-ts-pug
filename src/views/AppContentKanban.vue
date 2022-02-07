@@ -47,7 +47,7 @@ export default defineComponent({
   },
   computed: {
     stateTasks(): Task[] {
-      return this.$store.state.tasks;
+      return this.$store.state.main.tasks;
     },
     searchedTasks(): Task[] {
       let filteredTasks = this.stateTasks.filter((item) =>
@@ -55,11 +55,6 @@ export default defineComponent({
       );
       if (this.calendarSearchIsOn) {
         filteredTasks = filteredTasks.filter((item) => {
-          // const day = Number.parseInt(item.deadLine.slice(0, 2));
-          // const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
-          // const year = Number.parseInt(item.deadLine.slice(6));
-          // const date = new Date(year, month, day);
-          // console.log(date >= this.range.start);
           return item.deadLine >= this.range.start && item.deadLine <= this.range.end;
         });
       }
@@ -82,25 +77,9 @@ export default defineComponent({
     },
   },
   methods: {
-    // filterTasks() {
-    //   let filteredTasks = this.stateTasks.filter((item) => item.name.includes(this.taskName));
-    //   console.log(this.taskName);
-
-    //   if (this.calendarSearchIsOn) {
-    //     filteredTasks = filteredTasks.filter((item) => {
-    //       // const day = Number.parseInt(item.deadLine.slice(0, 2));
-    //       // const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
-    //       // const year = Number.parseInt(item.deadLine.slice(6));
-    //       // const date = new Date(year, month, day);
-    //       // console.log(date >= this.range.start);
-    //       return item.deadLine >= this.range.start && item.deadLine <= this.range.end;
-    //     });
-    //   }
-    //   return filteredTasks;
-    // },
     moveCurrentCard(event: MouseEvent) {
-      if (this.$store.state.mouseIsTracked) {
-        const currentCard = this.$store.state.currentCard;
+      if (this.$store.state.moving.mouseIsTracked) {
+        const currentCard = this.$store.state.moving.currentCard;
         if (currentCard) {
           currentCard.style.left = event.pageX - currentCard.offsetWidth / 2 + 'px';
           currentCard.style.top = event.pageY - currentCard.offsetHeight / 2 + 'px';

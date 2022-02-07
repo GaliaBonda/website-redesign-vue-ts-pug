@@ -1,14 +1,13 @@
-import {createStore} from 'vuex';
+import {createStore, Module, Mutation} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
-import {State} from 'vue';
+import {State, StateModules} from 'vue';
 
 const initialState: Task[] = [
   {
     name: 'Design mockup',
     desc: "Create full rendering of design for client's web-product. Client K&H Science",
     deadLine: new Date(2021, 10, 12),
-    // '12.11.2021',
     id: 1,
     status: Status.TODO,
   },
@@ -24,21 +23,15 @@ const initialState: Task[] = [
     name: 'Application Testing',
     desc: 'Identify errors in a website, provide unit, system and functional testing',
     deadLine: new Date(2022, 10, 21),
-    // deadLine: '21.11.2022',
     id: 3,
     status: Status.DONE,
   },
 ];
 
-export default createStore({
-  state(): State {
-    return {
-      tasks: initialState,
-      mouseIsTracked: false,
-      currentCard: null,
-      id: 0,
-    };
-  },
+const mainModule: Module<any, unknown> = {
+  state: () => ({
+    tasks: initialState,
+  }),
   mutations: {
     addNewTask(state: State, payload: Task) {
       state.tasks.push(payload);
@@ -66,7 +59,25 @@ export default createStore({
         }
       });
     },
-    setCurrentCard(state: State, payload) {
+    initialiseStore(state) {
+      const mainState = localStorage.getItem('main');
+      if (mainState) {
+        state = Object.assign(state, JSON.parse(mainState));
+      }
+    },
+  },
+  actions: {},
+  getters: {},
+};
+
+const cardMovingModule: Module<any, unknown> = {
+  state: () => ({
+    mouseIsTracked: false,
+    currentCard: null,
+    id: 0,
+  }),
+  mutations: {
+    setCurrentCard(state: State, payload: {card: HTMLElement; id: number}) {
       if (payload) {
         state.currentCard = payload.card;
         state.id = payload.id;
@@ -80,5 +91,70 @@ export default createStore({
     },
   },
   actions: {},
-  modules: {},
+  getters: {},
+};
+
+const activityModule: Module<any, unknown> = {
+  state: () => ({
+    images: [
+      {
+        name: "Big City: bird's eye view photo ",
+        img: 'record_img_1.png',
+        id: 1,
+      },
+      {
+        name: 'City beach: far horizont',
+        img: 'record_img_2.png',
+        id: 2,
+      },
+      {
+        name: 'Lake of unusual form',
+        img: 'record_img_3.png',
+        id: 3,
+      },
+      {
+        name: 'Sea picture: inspiring art',
+        img: 'record_img_4.png',
+        id: 4,
+      },
+    ],
+    records: [
+      {
+        recordType: 'record__done',
+        recordText: 'Darika Samak mark as done Listing on Product Hunt so that we can reach as many potential users',
+        recordDate: '8:40 PM',
+        recordHasDetails: false,
+        recordDetails: '',
+        recordHasImg: false,
+        id: 11,
+      },
+      {
+        recordType: 'record__comment',
+        recordText: 'Emilee Simchenko commented on Account for teams and personal in bottom style',
+        recordDate: '7:32 PM',
+        recordHasDetails: true,
+        recordDetails:
+          'During a project build, it is necessary to evaluate the product design and development against project requirements and outcomes',
+        recordHasImg: false,
+        id: 22,
+      },
+      {
+        recordType: 'record__upload',
+        recordText: 'Darika Samak uploaded 4 files on An option to search in current projects or in all projects',
+        recordDate: '6:02 PM',
+        recordHasDetails: false,
+        recordDetails: '',
+        recordHasImg: true,
+        id: 33,
+      },
+    ],
+  }),
+};
+
+export default createStore<StateModules>({
+  modules: {
+    main: mainModule,
+    moving: cardMovingModule,
+    activity: activityModule,
+  },
 });
