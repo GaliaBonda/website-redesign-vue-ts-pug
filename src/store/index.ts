@@ -1,4 +1,4 @@
-import {createStore, Module, Mutation} from 'vuex';
+import {createStore, Module} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
 import {State, StateModules} from 'vue';
@@ -7,7 +7,8 @@ const initialState: Task[] = [
   {
     name: 'Design mockup',
     desc: "Create full rendering of design for client's web-product. Client K&H Science",
-    deadLine: new Date(2021, 10, 12),
+    deadLine: new Date(2022, 2, 22),
+    openingDate: new Date(2022, 0, 22),
     id: 1,
     status: Status.TODO,
   },
@@ -15,6 +16,7 @@ const initialState: Task[] = [
     name: 'Analysis of requirements and outcomes',
     desc: 'Evaluate the product design and development against project requirements and outcomes',
     deadLine: new Date(2022, 0, 27),
+    openingDate: new Date(2022, 0, 23),
     // deadLine: '27.01.2022',
     id: 2,
     status: Status.INPROGRESS,
@@ -22,7 +24,8 @@ const initialState: Task[] = [
   {
     name: 'Application Testing',
     desc: 'Identify errors in a website, provide unit, system and functional testing',
-    deadLine: new Date(2022, 10, 21),
+    deadLine: new Date(2022, 1, 21),
+    openingDate: new Date(2022, 0, 2),
     id: 3,
     status: Status.DONE,
   },

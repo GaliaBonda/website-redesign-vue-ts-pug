@@ -71,7 +71,7 @@ export default defineComponent({
       name: '',
       status: '',
       desc: '',
-      deadLine: '',
+      deadLine: new Date(),
       id: 0,
     };
   },
@@ -82,16 +82,16 @@ export default defineComponent({
     attributes() {
       let attributes: unknown[] = [];
       this.stateTasks.forEach((item) => {
-        const day = Number.parseInt(item.deadLine.slice(0, 2));
-        const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
-        const year = Number.parseInt(item.deadLine.slice(6));
-        const date = new Date(year, month, day);
+        // const day = Number.parseInt(item.deadLine.slice(0, 2));
+        // const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
+        // const year = Number.parseInt(item.deadLine.slice(6));
+        // const date = new Date(year, month, day);
         attributes.push({
           key: item.id,
           customData: {
             title: item.name,
           },
-          dates: date,
+          dates: item.openingDate,
         });
       });
       return attributes;

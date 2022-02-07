@@ -75,6 +75,7 @@ export default defineComponent({
           deadLine: this.form.date,
           id: this.$store.state.main.tasks.length + 1,
           status: formattedStatus || Status.TODO,
+          openingDate: new Date(),
         });
         this.form.name = '';
         this.form.desc = '';

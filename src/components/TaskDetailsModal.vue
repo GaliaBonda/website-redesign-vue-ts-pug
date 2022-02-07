@@ -8,7 +8,7 @@
     p.record__status(v-if="!editModeIsOn") {{status}}
     select(v-else="editModeIsOn" v-model="taskStatus")
       option(v-for="item in statuses") {{item}}
-    p.record__date(v-if="!editModeIsOn") {{formatDate(taskDeadLine)}}
+    p.record__date(v-if="!editModeIsOn") {{formattedTaskDeadline}}
     input.record__date(type="date" v-else="editModeIsOn" v-model="formattedTaskDeadline")
     .details-btns(v-show="editAllow")
       button.record__btn.details-btn(v-if="!editModeIsOn" v-on:click="openEditMode") Edit
@@ -38,13 +38,11 @@ export default defineComponent({
   computed: {
     formattedTaskDeadline: {
       get() {
+        if (!this.deadLine) return this.deadLine;
         const day = this.deadLine?.getDate();
         const month = this.deadLine?.getMonth();
         const year = this.deadLine?.getFullYear();
-        if (day && month && year) {
-          return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
-        }
-        return this.deadLine;
+        return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
       },
       set(newVal: string) {
         const day = Number.parseInt(newVal.slice(8));
