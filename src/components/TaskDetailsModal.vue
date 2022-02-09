@@ -39,10 +39,10 @@ export default defineComponent({
     formattedTaskDeadline: {
       get() {
         if (!this.deadLine) return this.deadLine;
-        const day = this.deadLine?.getDate();
-        const month = this.deadLine?.getMonth();
-        const year = this.deadLine?.getFullYear();
-        return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
+        // const day = this.deadLine?.getDate();
+        // const month = this.deadLine?.getMonth();
+        // const year = this.deadLine?.getFullYear();
+        return this.deadLine.toLocaleDateString('pt-br').split('/').reverse().join('-');
       },
       set(newVal: string) {
         const day = Number.parseInt(newVal.slice(8));

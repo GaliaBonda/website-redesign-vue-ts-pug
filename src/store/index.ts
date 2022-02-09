@@ -17,7 +17,6 @@ const initialState: Task[] = [
     desc: 'Evaluate the product design and development against project requirements and outcomes',
     deadLine: new Date(2022, 0, 27),
     openingDate: new Date(2022, 0, 23),
-    // deadLine: '27.01.2022',
     id: 2,
     status: Status.INPROGRESS,
   },

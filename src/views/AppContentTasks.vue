@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeUpdate, onMounted, onUpdated} from 'vue';
+import {computed, defineComponent, onBeforeUpdate, onMounted, onUpdated, ref} from 'vue';
 import {useStore} from 'vuex';
 import AppContentTask from '../components/AppContentTask.vue';
 import AppNewTaskModal from '../components/AppNewTaskModal.vue';
@@ -28,17 +28,12 @@ export default defineComponent({
     TaskDetailsModal,
     AppContentTask,
   },
-  data() {
-    return {
-      modalIsOpen: false,
-      detailsModalIsOpen: false,
-    };
-  },
   setup() {
     const store = useStore();
     let stateTasks = computed(function () {
       return store.state.main.tasks;
     });
+
     let itemRefs: any[] = [];
     let tasksNumber: number;
     const setItemRef = (el: any) => {
@@ -62,26 +57,36 @@ export default defineComponent({
       if (tasksNumber < stateTasks.value.length) itemRefs[itemRefs.length - 1].animateNewTask();
       tasksNumber = stateTasks.value.length;
     });
+
+    const deleteTask = (index: number) => {
+      store.commit('removeTask', index);
+    };
+    let modalIsOpen = ref(false);
+    const openNewTaskModal = () => {
+      modalIsOpen.value = true;
+    };
+    const closeNewTaskModal = () => {
+      modalIsOpen.value = false;
+    };
+
+    let detailsModalIsOpen = ref(false);
+    const openDetailsModal = () => {
+      detailsModalIsOpen.value = true;
+    };
+    const closeDetailsModal = () => {
+      detailsModalIsOpen.value = false;
+    };
+
     return {
       setItemRef,
+      deleteTask,
+      modalIsOpen,
+      openNewTaskModal,
+      closeNewTaskModal,
+      detailsModalIsOpen,
+      openDetailsModal,
+      closeDetailsModal,
     };
-  },
-  methods: {
-    deleteTask(index: number) {
-      this.$store.commit('removeTask', index);
-    },
-    openNewTaskModal() {
-      this.modalIsOpen = true;
-    },
-    closeNewTaskModal() {
-      this.modalIsOpen = false;
-    },
-    openDetailsModal() {
-      this.detailsModalIsOpen = true;
-    },
-    closeDetailsModal() {
-      this.detailsModalIsOpen = false;
-    },
   },
 });
 </script>
