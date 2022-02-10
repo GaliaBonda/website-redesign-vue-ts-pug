@@ -26,7 +26,6 @@ export default defineComponent({
     toDoEdge: Number,
     inProgressEdge: Number,
   },
-  methods: {},
 });
 </script>
 

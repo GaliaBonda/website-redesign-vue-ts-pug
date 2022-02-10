@@ -27,28 +27,46 @@ header.header
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, ref} from 'vue';
 import {makeElementActive} from '../mixins/makeElementActive';
 
 export default defineComponent({
   name: 'TheHeader',
-  mixins: [makeElementActive],
+  setup() {
+    const socialImages = ref([
+      {
+        img: 'socials_1.png',
+        id: 1,
+      },
+      {
+        img: 'socials_2.png',
+        id: 2,
+      },
+      {
+        img: 'socials_3.png',
+        id: 3,
+      },
+    ]);
+    return {
+      socialImages,
+    };
+  },
   data(): Record<string, unknown> {
     return {
-      socialImages: [
-        {
-          img: 'socials_1.png',
-          id: 1,
-        },
-        {
-          img: 'socials_2.png',
-          id: 2,
-        },
-        {
-          img: 'socials_3.png',
-          id: 3,
-        },
-      ],
+      // socialImages: [
+      //   {
+      //     img: 'socials_1.png',
+      //     id: 1,
+      //   },
+      //   {
+      //     img: 'socials_2.png',
+      //     id: 2,
+      //   },
+      //   {
+      //     img: 'socials_3.png',
+      //     id: 3,
+      //   },
+      // ],
     };
   },
 });

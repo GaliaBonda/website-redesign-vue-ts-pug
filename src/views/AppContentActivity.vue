@@ -11,34 +11,40 @@
           .record__details(v-if="item.recordHasDetails")
             p.record__details-text {{ item.recordDetails }}
           .record__album(v-if="item.recordHasImg")
-            img.record__album-img(v-for="item in images" v-bind:key="item.id" v-bind:src="require('../assets/' + item.img)" v-on:click="getItemIndex(item.id)" alt="record-img")
+            img.record__album-img(v-for="(item, index) in images" 
+            v-bind:key="item.id" 
+            v-bind:src="require('../assets/' + item.img)" 
+            v-on:click="getItemIndex(index)" alt="record-img")
 </template>
 
 <style scoped lang="scss" src="../styles/scss/content.scss"></style>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
-import mitt from 'mitt';
+import {computed, defineComponent, ref} from 'vue';
+import {useStore} from 'vuex';
+// import mitt from 'mitt';
 
-declare module '@vue/runtime-core' {
-  interface ComponentCustomProperties {
-    emitter: ReturnType<typeof mitt>;
-  }
-}
+// declare module '@vue/runtime-core' {
+//   interface ComponentCustomProperties {
+//     emitter: ReturnType<typeof mitt>;
+//   }
+// }
 
 export default defineComponent({
   name: 'AppContentActivity',
-  data() {
-    return {
-      images: this.$store.state.activity.images,
-      records: this.$store.state.activity.records,
+  setup() {
+    const store = useStore();
+    const stateActivity = computed(() => store.state.activity);
+    let images = ref(stateActivity.value.images);
+    let records = ref(stateActivity.value.records);
+    const getItemIndex = (id: number) => {
+      store.commit('changeCurrentImg', id);
     };
-  },
-  methods: {
-    getItemIndex(id: number) {
-      const index = this.images.findIndex((i) => i.id === id);
-      this.emitter.emit('getIndex', index);
-    },
+    return {
+      images,
+      records,
+      getItemIndex,
+    };
   },
 });
 </script>

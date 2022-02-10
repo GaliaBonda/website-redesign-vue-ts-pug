@@ -16,20 +16,16 @@
 
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
-import {defineComponent, PropType} from 'vue';
+import {defineComponent, onMounted, PropType, ref} from 'vue';
 import TaskDetailsModal from './TaskDetailsModal.vue';
 import {formatDate} from '../mixins/formatDate';
+import {useStore} from 'vuex';
+import useFormatDate from '@/composables/useFormatDate';
 
 export default defineComponent({
   name: 'AppContentTask',
   components: {
     TaskDetailsModal,
-  },
-  mixins: [formatDate],
-  data() {
-    return {
-      detailsModalIsOpen: false,
-    };
   },
   props: {
     name: String,
@@ -40,24 +36,34 @@ export default defineComponent({
       type: String as PropType<Status>,
     },
   },
-  methods: {
-    deleteTask(index: number) {
-      this.$store.commit('removeTask', index);
-    },
-    showDetails() {
-      this.detailsModalIsOpen = true;
-    },
-    closeDetails() {
-      this.detailsModalIsOpen = false;
-    },
-    animateRecord() {
-      const el = this.$refs.record as HTMLElement;
-      if (el) el.classList.add('grow-animation');
-    },
-    animateNewTask() {
-      const el = this.$refs.record as HTMLElement;
-      if (el) el.classList.add('blink-animation');
-    },
+  setup(props) {
+    const store = useStore();
+    let detailsModalIsOpen = ref(false);
+    const deleteTask = (index: number) => store.commit('removeTask', index);
+    const showDetails = () => (detailsModalIsOpen.value = true);
+    const closeDetails = () => (detailsModalIsOpen.value = false);
+    const record = ref(null);
+
+    const animateRecord = () => {
+      const el = record.value;
+      if (el) (el as HTMLElement).classList.add('grow-animation');
+    };
+    const animateNewTask = () => {
+      const el = record.value;
+      if (el) (el as HTMLElement).classList.add('blink-animation');
+    };
+
+    const formatDate = useFormatDate(props.deadLine);
+    return {
+      detailsModalIsOpen,
+      record,
+      deleteTask,
+      showDetails,
+      closeDetails,
+      animateRecord,
+      animateNewTask,
+      formatDate,
+    };
   },
 });
 </script>

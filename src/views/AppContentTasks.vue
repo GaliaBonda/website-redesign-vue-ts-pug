@@ -5,7 +5,7 @@
     AppNewTaskModal(v-show="modalIsOpen" v-on:close-modal="closeNewTaskModal")
     .content__records
       button.record__btn(v-on:click="openNewTaskModal") Add new task
-      .record.content__record(v-for="(item, index) in this.$store.state.main.tasks" v-bind:key="item.id")
+      .record.content__record(v-for="(item, index) in stateTasks" v-bind:key="item.id")
         AppContentTask(v-bind:ref="setItemRef" 
         v-bind:name="item.name" 
         v-bind:desc="item.desc" 
@@ -30,6 +30,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+
     let stateTasks = computed(function () {
       return store.state.main.tasks;
     });
@@ -86,6 +87,7 @@ export default defineComponent({
       detailsModalIsOpen,
       openDetailsModal,
       closeDetailsModal,
+      stateTasks,
     };
   },
 });

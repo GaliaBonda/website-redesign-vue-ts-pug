@@ -47,7 +47,8 @@ section.sidebar
             a.sidebar-nav__link(href="#" v-on:click="makeActive") Home
           li.sidebar-nav__item
             a.sidebar-nav__link(href="#" v-on:click="makeActive") My Tasks
-          li.sidebar-nav__item.sidebar-nav__item--notifications(id="notifications" v-bind:data-after="notifications")
+          li.sidebar-nav__item.sidebar-nav__item--notifications(id="notifications" 
+          v-bind:data-after="notifications")
             a.sidebar-nav__link(href="#" v-on:click="makeActive") Notifications
 </template>
 
@@ -170,77 +171,95 @@ section.sidebar
 </style>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
-import {createMessage} from '../mixins/createMessage';
-import {makeElementActive} from '../mixins/makeElementActive';
+import {computed, defineComponent, ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {useStore} from 'vuex';
 import AppMessage from './AppMessage.vue';
+import useElementActivator from '@/composables/useElementActivator';
 
 export default defineComponent({
   name: 'TheSidebar',
-  mixins: [createMessage, makeElementActive],
-  data() {
-    return {
-      userName: 'Jean Gonzales',
-      status: 'Product Owner',
-      avatar: 'person.png',
-      completedTasks: 372,
-      openTasks: 11,
-      notifications: 3,
-      modalIsOpen: false,
-      declineModalIsOpen: false,
-    };
-  },
   components: {
     AppMessage,
   },
-  computed: {
-    openTasksAvailable() {
-      return this.openTasks > 0;
-    },
-    messageText() {
-      return this.openTasksAvailable
+  setup() {
+    let userName = ref('Jean Gonzales');
+    let status = ref('Product Owner');
+    let avatar = ref('person.png');
+    let completedTasks = ref(372);
+    let openTasks = ref(11);
+
+    const store = useStore();
+    const currentImgId = computed(() => store.state.activity.currentImgId);
+
+    let notifications = ref(currentImgId);
+    let modalIsOpen = ref(false);
+    let declineModalIsOpen = ref(false);
+
+    const openTasksAvailable = computed((): boolean => {
+      return openTasks.value > 0;
+    });
+    const messageText = computed((): string => {
+      return openTasksAvailable.value
         ? 'Are you sure you want to change the number of tasks?'
         : 'You have no open tasks to set complete.';
-    },
-  },
-  methods: {
-    changeTaskCounter() {
-      this.completedTasks = (this.completedTasks as number) + 1;
-      this.openTasks = (this.openTasks as number) - 1;
-      this.modalIsOpen = false;
-    },
-    closeMessageModal() {
-      this.modalIsOpen = false;
-    },
-    openMessageModal() {
-      this.modalIsOpen = true;
-    },
-    makeTasksActive(e: Event): void {
+    });
+
+    const changeTaskCounter = () => {
+      completedTasks.value = completedTasks.value + 1;
+      openTasks.value = openTasks.value - 1;
+      modalIsOpen.value = false;
+    };
+    const closeMessageModal = () => {
+      modalIsOpen.value = false;
+    };
+    const openMessageModal = () => {
+      modalIsOpen.value = true;
+    };
+    const makeTasksActive = (e: Event): void => {
       const currentElement = e.target as HTMLElement;
       if (currentElement.id === 'completed_tasks' || currentElement.id === 'open_tasks') {
         currentElement.style.cursor = 'pointer';
         currentElement.style.outline = '3px solid rgba(191, 191, 191, 0.2)';
         currentElement.style.outlineOffset = '4px';
       }
-    },
-    makeTasksNonActive(e: Event): void {
+    };
+    const makeTasksNonActive = (e: Event): void => {
       (e.target as HTMLElement).style.outline = 'none';
-    },
-    goToTasks(): void {
-      if ((this.openTasks as number) > 0) {
-        this.$router.push('/tasks');
+    };
+    const router = useRouter();
+    const goToTasks = (): void => {
+      if (openTasks.value > 0) {
+        router.push('/tasks');
       } else {
-        this.declineModalIsOpen = true;
+        declineModalIsOpen.value = true;
       }
-    },
-    closeDeclineModal() {
-      this.declineModalIsOpen = false;
-    },
-  },
-  mounted() {
-    this.emitter.on('getIndex', (index) => {
-      this.notifications = index as number;
-    });
+    };
+    const closeDeclineModal = () => {
+      declineModalIsOpen.value = false;
+    };
+    const makeActive = useElementActivator();
+
+    return {
+      userName,
+      status,
+      avatar,
+      completedTasks,
+      openTasks,
+      notifications,
+      modalIsOpen,
+      declineModalIsOpen,
+      openTasksAvailable,
+      messageText,
+      changeTaskCounter,
+      closeMessageModal,
+      openMessageModal,
+      makeTasksActive,
+      makeTasksNonActive,
+      goToTasks,
+      closeDeclineModal,
+      makeActive,
+    };
   },
 });
 </script>

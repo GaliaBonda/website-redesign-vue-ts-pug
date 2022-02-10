@@ -15,16 +15,18 @@
             button.calendar-btn.record__btn.close-btn(v-on:click="closeCalendar") x
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
-          AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
+          AppKanbanTasks(v-bind:status="item[0].status" 
+          v-bind:tasks="item" 
+          v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
 </template>
 
 <script lang="ts">
-import Status from '@/interfaces/status.interface';
-import Task from '@/interfaces/task.interface';
 import {computed, defineComponent, ref, watch} from 'vue';
 import AppKanbanTasks from '../components/AppKanbanTasks.vue';
 import {Calendar, DatePicker} from 'v-calendar';
 import {useStore} from 'vuex';
+import useTasksSearch from '@/composables/useTasksSearch';
+import useTasksFilter from '@/composables/useTasksFilter';
 
 export default defineComponent({
   name: 'AppContentKanban',
@@ -35,33 +37,21 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-
     let stateTasks = computed(() => store.state.main.tasks);
 
-    let taskName = ref('');
+    const {
+      taskName,
+      searchedTasks,
+      calendarIsOpen,
+      range,
+      calendarSearchIsOn,
+      openCalendar,
+      closeCalendar,
+      runCalendarSearch,
+      disableCalendarSearch,
+    } = useTasksSearch(stateTasks.value);
 
-    let searchedTasks = computed(() => {
-      let filteredTasks = stateTasks.value.filter((item: Task) =>
-        item.name.toLowerCase().includes(taskName.value.toLowerCase()),
-      );
-
-      if (calendarSearchIsOn.value) {
-        filteredTasks = filteredTasks.filter((item: Task) => {
-          return item.deadLine >= range.value.start && item.deadLine <= range.value.end;
-        });
-      }
-      return filteredTasks;
-    });
-    let toDoTasks = computed(() => searchedTasks.value.filter((item: Task) => item.status === Status.TODO));
-    let inProgressTasks = computed(() => searchedTasks.value.filter((item: Task) => item.status === Status.INPROGRESS));
-    let doneTasks = computed(() => searchedTasks.value.filter((item: Task) => item.status === Status.DONE));
-
-    let filteredKanbanTasks = computed(() => {
-      const toDoArray = toDoTasks.value.length > 0 ? toDoTasks.value : [{status: Status.TODO}];
-      const inProgressArray = inProgressTasks.value.length > 0 ? inProgressTasks.value : [{status: Status.INPROGRESS}];
-      const doneArray = doneTasks.value.length > 0 ? doneTasks.value : [{status: Status.DONE}];
-      return [toDoArray, inProgressArray, doneArray];
-    });
+    const {filteredKanbanTasks} = useTasksFilter(searchedTasks);
 
     let toDoEdge = ref(0);
     let inProgressEdge = ref(0);
@@ -82,26 +72,6 @@ export default defineComponent({
         inProgressEdge.value = toDoEdge.value + kanbanTableWidth / 3;
       }
     };
-
-    let calendarIsOpen = ref(false);
-    let range = ref({
-      start: new Date(),
-      end: new Date(),
-    });
-    let calendarSearchIsOn = ref(false);
-    const openCalendar = () => {
-      calendarIsOpen.value = true;
-    };
-    const closeCalendar = () => {
-      calendarIsOpen.value = false;
-    };
-    const runCalendarSearch = () => {
-      calendarSearchIsOn.value = !calendarSearchIsOn.value;
-    };
-    const disableCalendarSearch = () => {
-      calendarSearchIsOn.value = false;
-    };
-    watch(range, () => (calendarSearchIsOn.value = true));
     return {
       toDoEdge,
       inProgressEdge,

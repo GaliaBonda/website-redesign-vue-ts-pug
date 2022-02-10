@@ -13,22 +13,23 @@ import {defineComponent} from 'vue';
 
 export default defineComponent({
   name: 'AppMessage',
-  data() {
-    return {};
-  },
-  computed: {},
   props: {
     title: String,
     text: String,
     changesAllow: Boolean,
   },
-  methods: {
-    closeModal() {
-      this.$emit('close-message-modal');
-    },
-    changeData() {
-      if (this.changesAllow) this.$emit('change-data');
-    },
+  setup(props, context) {
+    const closeModal = (e: Event) => {
+      e.preventDefault();
+      context.emit('close-message-modal');
+    };
+    const changeData = () => {
+      if (props.changesAllow) context.emit('change-data');
+    };
+    return {
+      closeModal,
+      changeData,
+    };
   },
 });
 </script>
