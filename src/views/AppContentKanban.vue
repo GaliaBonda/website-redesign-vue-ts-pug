@@ -15,15 +15,18 @@
             button.calendar-btn.record__btn.close-btn(v-on:click="closeCalendar") x
       .content__table.kanban-table(v-on:mousemove="calculateTableSizes") 
         .kanban-table__item(v-for="(item, index) in filteredKanbanTasks" v-bind:key="index") 
-          AppKanbanTasks(v-bind:status="item[0].status" v-bind:tasks="item" v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
+          AppKanbanTasks(v-bind:status="item[0].status" 
+          v-bind:tasks="item" 
+          v-bind:toDoEdge="toDoEdge" v-bind:inProgressEdge="inProgressEdge")
 </template>
 
 <script lang="ts">
-import Status from '@/interfaces/status.interface';
-import Task from '@/interfaces/task.interface';
-import {defineComponent} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import AppKanbanTasks from '../components/AppKanbanTasks.vue';
 import {Calendar, DatePicker} from 'v-calendar';
+import {useStore} from 'vuex';
+import useTasksSearch from '@/composables/useTasksSearch';
+import useTasksFilter from '@/composables/useTasksFilter';
 
 export default defineComponent({
   name: 'AppContentKanban',
@@ -32,85 +35,60 @@ export default defineComponent({
     Calendar,
     DatePicker,
   },
-  data() {
-    return {
-      toDoEdge: 0,
-      inProgressEdge: 0,
-      taskName: '',
-      calendarIsOpen: false,
-      range: {
-        start: new Date(),
-        end: new Date(),
-      },
-      calendarSearchIsOn: false,
-    };
-  },
-  computed: {
-    stateTasks(): Task[] {
-      return this.$store.state.main.tasks;
-    },
-    searchedTasks(): Task[] {
-      let filteredTasks = this.stateTasks.filter((item) =>
-        item.name.toLowerCase().includes(this.taskName.toLowerCase()),
-      );
-      if (this.calendarSearchIsOn) {
-        filteredTasks = filteredTasks.filter((item) => {
-          return item.deadLine >= this.range.start && item.deadLine <= this.range.end;
-        });
-      }
-      return filteredTasks;
-    },
-    toDoTasks(): Task[] {
-      return this.searchedTasks.filter((item) => item.status === Status.TODO);
-    },
-    inProgressTasks(): Task[] {
-      return this.searchedTasks.filter((item) => item.status === Status.INPROGRESS);
-    },
-    doneTasks(): Task[] {
-      return this.searchedTasks.filter((item) => item.status === Status.DONE);
-    },
-    filteredKanbanTasks(): Task[][] | {status: Status}[][] {
-      const toDoArray = this.toDoTasks.length > 0 ? this.toDoTasks : [{status: Status.TODO}];
-      const inProgressArray = this.inProgressTasks.length > 0 ? this.inProgressTasks : [{status: Status.INPROGRESS}];
-      const doneArray = this.doneTasks.length > 0 ? this.doneTasks : [{status: Status.DONE}];
-      return [toDoArray, inProgressArray, doneArray];
-    },
-  },
-  methods: {
-    moveCurrentCard(event: MouseEvent) {
-      if (this.$store.state.moving.mouseIsTracked) {
-        const currentCard = this.$store.state.moving.currentCard;
+  setup() {
+    const store = useStore();
+    let stateTasks = computed(() => store.state.main.tasks);
+
+    const {
+      taskName,
+      searchedTasks,
+      calendarIsOpen,
+      range,
+      calendarSearchIsOn,
+      openCalendar,
+      closeCalendar,
+      runCalendarSearch,
+      disableCalendarSearch,
+    } = useTasksSearch(stateTasks.value);
+
+    const {filteredKanbanTasks} = useTasksFilter(searchedTasks);
+
+    let toDoEdge = ref(0);
+    let inProgressEdge = ref(0);
+    const moveCurrentCard = (event: MouseEvent) => {
+      if (store.state.moving.mouseIsTracked) {
+        const currentCard = store.state.moving.currentCard;
         if (currentCard) {
           currentCard.style.left = event.pageX - currentCard.offsetWidth / 2 + 'px';
           currentCard.style.top = event.pageY - currentCard.offsetHeight / 2 + 'px';
         }
       }
-    },
-    calculateTableSizes(event: MouseEvent) {
+    };
+    const calculateTableSizes = (event: MouseEvent) => {
       if (event.currentTarget) {
         const kanbanTable = event.currentTarget as HTMLElement;
         const kanbanTableWidth = kanbanTable.getBoundingClientRect().width;
-        this.toDoEdge = kanbanTable.getBoundingClientRect().left + kanbanTableWidth / 3;
-        this.inProgressEdge = this.toDoEdge + kanbanTableWidth / 3;
+        toDoEdge.value = kanbanTable.getBoundingClientRect().left + kanbanTableWidth / 3;
+        inProgressEdge.value = toDoEdge.value + kanbanTableWidth / 3;
       }
-    },
-    openCalendar() {
-      this.calendarIsOpen = true;
-    },
-    closeCalendar() {
-      this.calendarIsOpen = false;
-    },
-    runCalendarSearch() {
-      this.calendarSearchIsOn = !this.calendarSearchIsOn;
-    },
-    disableCalendarSearch() {
-      this.calendarSearchIsOn = false;
-    },
-  },
-  watch: {
-    range(newVal, oldVal) {
-      this.calendarSearchIsOn = true;
-    },
+    };
+    return {
+      toDoEdge,
+      inProgressEdge,
+      moveCurrentCard,
+      calculateTableSizes,
+      taskName,
+      searchedTasks,
+      stateTasks,
+      filteredKanbanTasks,
+      calendarIsOpen,
+      range,
+      calendarSearchIsOn,
+      openCalendar,
+      closeCalendar,
+      runCalendarSearch,
+      disableCalendarSearch,
+    };
   },
 });
 </script>

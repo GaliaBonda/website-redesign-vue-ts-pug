@@ -5,7 +5,7 @@
     AppNewTaskModal(v-show="modalIsOpen" v-on:close-modal="closeNewTaskModal")
     .content__records
       button.record__btn(v-on:click="openNewTaskModal") Add new task
-      .record.content__record(v-for="(item, index) in this.$store.state.main.tasks" v-bind:key="item.id")
+      .record.content__record(v-for="(item, index) in stateTasks" v-bind:key="item.id")
         AppContentTask(v-bind:ref="setItemRef" 
         v-bind:name="item.name" 
         v-bind:desc="item.desc" 
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeUpdate, onMounted, onUpdated} from 'vue';
+import {computed, defineComponent, onBeforeUpdate, onMounted, onUpdated, ref} from 'vue';
 import {useStore} from 'vuex';
 import AppContentTask from '../components/AppContentTask.vue';
 import AppNewTaskModal from '../components/AppNewTaskModal.vue';
@@ -28,17 +28,13 @@ export default defineComponent({
     TaskDetailsModal,
     AppContentTask,
   },
-  data() {
-    return {
-      modalIsOpen: false,
-      detailsModalIsOpen: false,
-    };
-  },
   setup() {
     const store = useStore();
+
     let stateTasks = computed(function () {
       return store.state.main.tasks;
     });
+
     let itemRefs: any[] = [];
     let tasksNumber: number;
     const setItemRef = (el: any) => {
@@ -62,26 +58,37 @@ export default defineComponent({
       if (tasksNumber < stateTasks.value.length) itemRefs[itemRefs.length - 1].animateNewTask();
       tasksNumber = stateTasks.value.length;
     });
+
+    const deleteTask = (index: number) => {
+      store.commit('removeTask', index);
+    };
+    let modalIsOpen = ref(false);
+    const openNewTaskModal = () => {
+      modalIsOpen.value = true;
+    };
+    const closeNewTaskModal = () => {
+      modalIsOpen.value = false;
+    };
+
+    let detailsModalIsOpen = ref(false);
+    const openDetailsModal = () => {
+      detailsModalIsOpen.value = true;
+    };
+    const closeDetailsModal = () => {
+      detailsModalIsOpen.value = false;
+    };
+
     return {
       setItemRef,
+      deleteTask,
+      modalIsOpen,
+      openNewTaskModal,
+      closeNewTaskModal,
+      detailsModalIsOpen,
+      openDetailsModal,
+      closeDetailsModal,
+      stateTasks,
     };
-  },
-  methods: {
-    deleteTask(index: number) {
-      this.$store.commit('removeTask', index);
-    },
-    openNewTaskModal() {
-      this.modalIsOpen = true;
-    },
-    closeNewTaskModal() {
-      this.modalIsOpen = false;
-    },
-    openDetailsModal() {
-      this.detailsModalIsOpen = true;
-    },
-    closeDetailsModal() {
-      this.detailsModalIsOpen = false;
-    },
   },
 });
 </script>

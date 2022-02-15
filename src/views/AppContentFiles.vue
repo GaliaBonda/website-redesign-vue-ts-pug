@@ -8,14 +8,19 @@
 </template>
 
 <script lang="ts">
-import Task from '@/interfaces/task.interface';
-import {defineComponent} from 'vue';
+import {computed, defineComponent} from 'vue';
+import {useStore} from 'vuex';
 
 export default defineComponent({
-  computed: {
-    stateImgs(): Task[] {
-      return this.$store.state.activity.images;
-    },
+  name: 'AppContentFiles',
+  setup() {
+    const store = useStore();
+    const stateImgs = computed(() => {
+      return store.state.activity.images;
+    });
+    return {
+      stateImgs,
+    };
   },
 });
 </script>

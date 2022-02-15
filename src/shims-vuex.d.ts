@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
     id: number;
     images: Img[];
     records: Record[];
+    currentImgId: number;
   }
 
   interface StateModules {

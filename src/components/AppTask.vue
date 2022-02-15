@@ -16,19 +16,14 @@ v-bind:editAllow="true")
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
 import {formatDate} from '@/mixins/formatDate';
-import {defineComponent} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import TaskDetailsModal from './TaskDetailsModal.vue';
+import useFormatDate from '@/composables/useFormatDate';
 
 export default defineComponent({
   name: 'AppTask',
   components: {
     TaskDetailsModal,
-  },
-  mixins: [formatDate],
-  data() {
-    return {
-      detailsModalIsOpen: false,
-    };
   },
   props: {
     name: String,
@@ -41,10 +36,13 @@ export default defineComponent({
     toDoEdge: Number,
     inProgressEdge: Number,
   },
-  computed: {
-    taskClass() {
+  setup(props) {
+    let detailsModalIsOpen = ref(false);
+    const formatDate = useFormatDate(props.deadLine);
+
+    const taskClass = computed(() => {
       let taskStyle = '';
-      switch (this.status) {
+      switch (props.status) {
         case Status.TODO:
           taskStyle = 'todo';
           break;
@@ -56,39 +54,67 @@ export default defineComponent({
           break;
       }
       return taskStyle;
-    },
-    // date() {
-    //   if (!this.deadLine) return this.deadLine;
-    //   const day = Number.parseInt(this.deadLine.slice(0, 2));
-    //   const month = Number.parseInt(this.deadLine.slice(3, 5)) - 1;
-    //   const year = Number.parseInt(this.deadLine.slice(6));
-    //   const date = new Date(year, month, day);
-    //   return date;
-    // },
-    // formattedDate() {
-    //   let options: Intl.DateTimeFormatOptions = {
-    //     weekday: 'short',
-    //     year: 'numeric',
-    //     month: '2-digit',
-    //     day: 'numeric',
-    //   };
-    //   return this.deadLine?.toLocaleString('en', options);
-    // },
-    isExpired() {
-      if (!this.deadLine) return false;
+    });
+    const isExpired = computed(() => {
+      if (!props.deadLine) return false;
       const todayDate = new Date();
-      const difference = +this.deadLine - +todayDate;
+      const difference = +props.deadLine - +todayDate;
       if (difference < 0) return true;
       return false;
-    },
-    isUnderAttention() {
+    });
+    const isUnderAttention = computed(() => {
       const oneDayInMs = 86400000;
-      if (!this.deadLine) return false;
+      if (!props.deadLine) return false;
       const todayDate = new Date();
-      const diff = +this.deadLine - +todayDate;
+      const diff = +props.deadLine - +todayDate;
       if (diff >= 0 && Math.abs(diff) <= oneDayInMs) return true;
       return false;
-    },
+    });
+    return {
+      detailsModalIsOpen,
+      formatDate,
+      taskClass,
+      isExpired,
+      isUnderAttention,
+    };
+  },
+  // mixins: [formatDate],
+  // data() {
+  //   return {
+  //     detailsModalIsOpen: false,
+  //   };
+  // },
+  computed: {
+    // taskClass() {
+    //   let taskStyle = '';
+    //   switch (this.status) {
+    //     case Status.TODO:
+    //       taskStyle = 'todo';
+    //       break;
+    //     case Status.INPROGRESS:
+    //       taskStyle = 'inprogress';
+    //       break;
+    //     case Status.DONE:
+    //       taskStyle = 'done';
+    //       break;
+    //   }
+    //   return taskStyle;
+    // },
+    // isExpired() {
+    //   if (!this.deadLine) return false;
+    //   const todayDate = new Date();
+    //   const difference = +this.deadLine - +todayDate;
+    //   if (difference < 0) return true;
+    //   return false;
+    // },
+    // isUnderAttention() {
+    //   const oneDayInMs = 86400000;
+    //   if (!this.deadLine) return false;
+    //   const todayDate = new Date();
+    //   const diff = +this.deadLine - +todayDate;
+    //   if (diff >= 0 && Math.abs(diff) <= oneDayInMs) return true;
+    //   return false;
+    // },
   },
   methods: {
     startMoving(event: MouseEvent) {

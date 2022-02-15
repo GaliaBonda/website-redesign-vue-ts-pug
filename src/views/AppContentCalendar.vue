@@ -18,6 +18,73 @@
             
 </template>
 
+<script lang="ts">
+import {computed, defineComponent, ref} from 'vue';
+import {Calendar, DatePicker} from 'v-calendar';
+import Task from '@/interfaces/task.interface';
+import TaskDetailsModal from '../components/TaskDetailsModal.vue';
+import {useStore} from 'vuex';
+
+export default defineComponent({
+  name: 'AppContentCalendar',
+  components: {
+    Calendar,
+    DatePicker,
+    TaskDetailsModal,
+  },
+  setup() {
+    const detailsModalIsOpen = ref(false);
+    const name = ref('');
+    const status = ref('');
+    const desc = ref('');
+    const deadLine = ref(new Date());
+    const id = ref(0);
+
+    const store = useStore();
+    const stateTasks = computed(() => store.state.main.tasks);
+    const attributes = computed(() => {
+      let attributes: unknown[] = [];
+      stateTasks.value.forEach((item: Task) => {
+        attributes.push({
+          key: item.id,
+          customData: {
+            title: item.name,
+          },
+          dates: item.openingDate,
+        });
+      });
+      return attributes;
+    });
+    const openDetails = (key: number) => {
+      detailsModalIsOpen.value = true;
+      let currentTask = stateTasks.value.find((item: Task) => item.id === key);
+      if (currentTask) {
+        name.value = currentTask.name;
+        status.value = currentTask.status;
+        desc.value = currentTask.desc;
+        deadLine.value = currentTask.deadLine;
+        id.value = currentTask.id;
+      }
+    };
+    const closeDetails = () => {
+      detailsModalIsOpen.value = false;
+    };
+
+    return {
+      detailsModalIsOpen,
+      name,
+      status,
+      desc,
+      deadLine,
+      id,
+      attributes,
+      openDetails,
+      closeDetails,
+    };
+  },
+});
+</script>
+
 <style scoped lang="scss" src="../styles/scss/content.scss"></style>
 <style lang="scss">
 $day-border: #b8c2cc;
@@ -56,67 +123,3 @@ $weekday-border: #eaeaea;
   opacity: 0.5;
 }
 </style>
-
-<script lang="ts">
-import {defineComponent} from 'vue';
-import {Calendar, DatePicker} from 'v-calendar';
-import Task from '@/interfaces/task.interface';
-import TaskDetailsModal from '../components/TaskDetailsModal.vue';
-
-export default defineComponent({
-  name: 'AppContentCalendar',
-  data() {
-    return {
-      detailsModalIsOpen: false,
-      name: '',
-      status: '',
-      desc: '',
-      deadLine: new Date(),
-      id: 0,
-    };
-  },
-  computed: {
-    stateTasks(): Task[] {
-      return this.$store.state.main.tasks;
-    },
-    attributes() {
-      let attributes: unknown[] = [];
-      this.stateTasks.forEach((item) => {
-        // const day = Number.parseInt(item.deadLine.slice(0, 2));
-        // const month = Number.parseInt(item.deadLine.slice(3, 5)) - 1;
-        // const year = Number.parseInt(item.deadLine.slice(6));
-        // const date = new Date(year, month, day);
-        attributes.push({
-          key: item.id,
-          customData: {
-            title: item.name,
-          },
-          dates: item.openingDate,
-        });
-      });
-      return attributes;
-    },
-  },
-  components: {
-    Calendar,
-    DatePicker,
-    TaskDetailsModal,
-  },
-  methods: {
-    openDetails(key: number) {
-      this.detailsModalIsOpen = true;
-      let currentTask = this.stateTasks.find((item) => item.id === key);
-      if (currentTask) {
-        this.name = currentTask.name;
-        this.status = currentTask.status;
-        this.desc = currentTask.desc;
-        this.deadLine = currentTask.deadLine;
-        this.id = currentTask.id;
-      }
-    },
-    closeDetails() {
-      this.detailsModalIsOpen = false;
-    },
-  },
-});
-</script>

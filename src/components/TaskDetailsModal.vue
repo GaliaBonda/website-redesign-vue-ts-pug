@@ -19,40 +19,13 @@
 
 <script lang="ts">
 import {formatDate} from '@/mixins/formatDate';
-import {defineComponent} from 'vue';
+import {computed, defineComponent, ref, WritableComputedRef} from 'vue';
 import Status from '../interfaces/status.interface';
+import useFormatDate from '@/composables/useFormatDate';
+import {useStore} from 'vuex';
 
 export default defineComponent({
   name: 'TaskDetailsModal',
-  data() {
-    return {
-      editModeIsOn: false,
-      taskName: this.name,
-      taskDesc: this.desc,
-      taskStatus: this.status,
-      taskDeadLine: this.deadLine,
-      statuses: [Status.TODO, Status.INPROGRESS, Status.DONE],
-    };
-  },
-  mixins: [formatDate],
-  computed: {
-    formattedTaskDeadline: {
-      get() {
-        if (!this.deadLine) return this.deadLine;
-        const day = this.deadLine?.getDate();
-        const month = this.deadLine?.getMonth();
-        const year = this.deadLine?.getFullYear();
-        return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
-      },
-      set(newVal: string) {
-        const day = Number.parseInt(newVal.slice(8));
-        const month = Number.parseInt(newVal.slice(5, 7)) - 1;
-        const year = Number.parseInt(newVal.slice(0, 4));
-        const date: Date = new Date(year, month, day);
-        this.taskDeadLine = date;
-      },
-    },
-  },
   props: {
     name: String,
     desc: String,
@@ -63,26 +36,65 @@ export default defineComponent({
     },
     editAllow: Boolean,
   },
-  methods: {
-    closeModal() {
-      this.$emit('close-details-modal');
-      this.editModeIsOn = false;
-    },
-    openEditMode() {
-      if (this.$store.state.moving.mouseIsTracked) return;
-      this.editModeIsOn = true;
-    },
-    saveChanges() {
+  setup(props, context) {
+    const formatDate = useFormatDate(props.deadLine);
+    let editModeIsOn = ref(false);
+    let taskName = ref(props.name);
+    let taskDesc = ref(props.desc);
+    let taskStatus = ref(props.status);
+    let taskDeadLine = ref(props.deadLine);
+    let statuses = ref([Status.TODO, Status.INPROGRESS, Status.DONE]);
+    let formattedTaskDeadline: WritableComputedRef<string> = computed({
+      get(): string {
+        if (!props.deadLine) return '';
+        return props.deadLine.toLocaleDateString('pt-br').split('/').reverse().join('-');
+      },
+      set(newVal: string) {
+        const day = Number.parseInt(newVal.slice(8));
+        const month = Number.parseInt(newVal.slice(5, 7)) - 1;
+        const year = Number.parseInt(newVal.slice(0, 4));
+        const newDate: Date = new Date(year, month, day);
+        taskDeadLine.value = newDate;
+      },
+    });
+
+    const closeModal = () => {
+      context.emit('close-details-modal');
+      editModeIsOn.value = false;
+    };
+
+    const store = useStore();
+    let stateMoving = computed(function () {
+      return store.state.moving;
+    });
+    const openEditMode = () => {
+      if (stateMoving.value.mouseIsTracked) return;
+      editModeIsOn.value = true;
+    };
+    const saveChanges = () => {
       const updatedTask = {
-        id: this.id,
-        name: this.taskName,
-        desc: this.taskDesc,
-        status: Status[this.taskStatus?.toUpperCase() as unknown as keyof typeof Status],
-        deadLine: this.taskDeadLine,
+        id: props.id,
+        name: taskName.value,
+        desc: taskDesc.value,
+        status: Status[taskStatus.value?.toUpperCase() as unknown as keyof typeof Status],
+        deadLine: taskDeadLine.value,
       };
-      this.$store.commit('changeTask', updatedTask);
-      this.closeModal();
-    },
+      store.commit('changeTask', updatedTask);
+      closeModal();
+    };
+    return {
+      formatDate,
+      editModeIsOn,
+      taskName,
+      taskDesc,
+      taskStatus,
+      taskDeadLine,
+      statuses,
+      formattedTaskDeadline,
+      closeModal,
+      openEditMode,
+      saveChanges,
+    };
   },
 });
 </script>

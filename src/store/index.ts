@@ -17,7 +17,6 @@ const initialState: Task[] = [
     desc: 'Evaluate the product design and development against project requirements and outcomes',
     deadLine: new Date(2022, 0, 27),
     openingDate: new Date(2022, 0, 23),
-    // deadLine: '27.01.2022',
     id: 2,
     status: Status.INPROGRESS,
   },
@@ -64,8 +63,22 @@ const mainModule: Module<any, unknown> = {
     },
     initialiseStore(state) {
       const mainState = localStorage.getItem('main');
+
       if (mainState) {
-        state = Object.assign(state, JSON.parse(mainState));
+        const savedTasks: Task[] = [];
+        JSON.parse(mainState).tasks.forEach((item: Record<string, string>) => {
+          const task: Task = {
+            deadLine: new Date(item.deadLine),
+            openingDate: new Date(item.openingDate),
+            status: Status[item.status.toUpperCase() as unknown as keyof typeof Status],
+            id: Number.parseInt(item.id),
+            name: item.name,
+            desc: item.desc,
+          };
+          savedTasks.push(task);
+        });
+        const newState = {...state, tasks: savedTasks};
+        state = Object.assign(state, newState);
       }
     },
   },
@@ -151,7 +164,13 @@ const activityModule: Module<any, unknown> = {
         id: 33,
       },
     ],
+    currentImgId: 3,
   }),
+  mutations: {
+    changeCurrentImg(state: State, payload: number) {
+      state.currentImgId = payload;
+    },
+  },
 };
 
 export default createStore<StateModules>({

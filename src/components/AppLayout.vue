@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import mitt from 'mitt';
-import {defineComponent} from 'vue';
+import {defineComponent, ref} from 'vue';
 import TheSidebar from './TheSidebar.vue';
 import TheHeader from './TheHeader.vue';
 
@@ -51,41 +51,28 @@ declare module '@vue/runtime-core' {
 
 export default defineComponent({
   name: 'AppLayout',
-  data() {
-    return {
-      sidebarIsOpen: true,
-    };
-  },
   components: {
     TheSidebar,
     TheHeader,
   },
-  // watch: {
-  //   screenSize(newSize: number, oldSize: number) {
-  //     console.log(newSize);
-
-  //     if (newSize <= 768) {
-  //       this.sidebarIsOpen = false;
-  //     } else {
-  //       this.sidebarIsOpen = true;
-  //     }
-  //   },
-  // },
-  created() {
-    window.addEventListener('resize', this.handleResize);
-    this.handleResize();
-  },
-  methods: {
-    handleResize() {
+  setup() {
+    let sidebarIsOpen = ref(true);
+    const handleResize = () => {
       if (window.innerWidth <= 768) {
-        this.sidebarIsOpen = false;
+        sidebarIsOpen.value = false;
       } else {
-        this.sidebarIsOpen = true;
+        sidebarIsOpen.value = true;
       }
-    },
-    openSidebar() {
-      this.sidebarIsOpen = true;
-    },
+    };
+    const openSidebar = () => {
+      sidebarIsOpen.value = true;
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return {
+      sidebarIsOpen,
+      openSidebar,
+    };
   },
 });
 </script>

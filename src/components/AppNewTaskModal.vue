@@ -20,89 +20,91 @@
           label.record-form__status-label(for="status-done") DONE
             input.record-form-element.record-form__status(type="radio" id="status-done" v-model="form.status" name="status" value='DONE')
       .record-form__item
-          input.record-form-element.record__btn(type="submit" id="btn" value="Add task" v-on:click.prevent="addTask") 
-          button.record__btn(v-on:click.prevent="closeModal") Close   
+          input.record-form-element.record__btn(type="submit" id="btn" 
+          value="Add task" v-on:click.prevent="addTask") 
+          button.record__btn(v-on:click.prevent="closeModal") Close
+      AppMessage(v-show="declineModalIsOpen" v-on:close-message-modal="closeDeclineModal" 
+      title="Sorry, no can do" 
+      text="No empty fields. Please, fill them all."
+      v-bind:changesAllow="false")  
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {computed, defineComponent, ref, WritableComputedRef} from 'vue';
+import {useStore} from 'vuex';
 import Status from '../interfaces/status.interface';
 import {createMessage} from '../mixins/createMessage';
+import AppMessage from './AppMessage.vue';
 
 export default defineComponent({
   name: 'AppNewTaskModal',
-  mixins: [createMessage],
-  data() {
-    return {
-      form: {
-        name: '',
-        desc: '',
-        date: new Date(),
-        status: Status.TODO,
-      },
-    };
+  components: {
+    AppMessage,
   },
-  computed: {
-    formattedTaskDeadline: {
-      get() {
-        const day = this.form.date?.getDate();
-        const month = this.form.date?.getMonth();
-        const year = this.form.date?.getFullYear();
-        if (day && month && year) {
-          return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
-        }
-        return this.deadLine;
+  setup(props, context) {
+    let form = ref({
+      name: '',
+      desc: '',
+      date: new Date(),
+      status: Status.TODO,
+    });
+    let declineModalIsOpen = ref(false);
+    let formattedTaskDeadline: WritableComputedRef<string> = computed({
+      get(): string {
+        const day = form.value.date.getDate();
+        const month = form.value.date.getMonth();
+        const year = form.value.date?.getFullYear();
+        return new Date(year, month, day).toLocaleDateString('pt-br').split('/').reverse().join('-');
       },
       set(newVal: string) {
         const day = Number.parseInt(newVal.slice(8));
         const month = Number.parseInt(newVal.slice(5, 7)) - 1;
         const year = Number.parseInt(newVal.slice(0, 4));
-        const date: Date = new Date(year, month, day);
-        this.form.date = date;
+        const newDate: Date = new Date(year, month, day);
+        form.value = {...form.value, date: newDate};
       },
-    },
-  },
-  methods: {
-    addTask(e: Event) {
+    });
+    const store = useStore();
+    let stateTasks = computed(function () {
+      return store.state.main.tasks;
+    });
+    const addTask = (e: Event) => {
       e.preventDefault();
-      // const formattedDate = new Date(this.form.date).toLocaleDateString();
-      const formStatus = this.form.status;
+      const formStatus = form.value.status;
       const formattedStatus = Status[formStatus as unknown as keyof typeof Status];
-      if (this.form.name && this.form.desc && this.form.date) {
-        this.$store.commit('addNewTask', {
-          name: this.form.name,
-          desc: this.form.desc,
-          deadLine: this.form.date,
-          id: this.$store.state.main.tasks.length + 1,
+
+      if (form.value.name && form.value.desc && form.value.date) {
+        store.commit('addNewTask', {
+          name: form.value.name,
+          desc: form.value.desc,
+          deadLine: form.value.date,
+          id: stateTasks.value.length + 1,
           status: formattedStatus || Status.TODO,
           openingDate: new Date(),
         });
-        this.form.name = '';
-        this.form.desc = '';
-        // this.form.date = '';
-        this.form.date = new Date();
-        this.form.status = Status.TODO;
-        this.closeModal();
+        form.value.name = '';
+        form.value.desc = '';
+        form.value.date = new Date();
+        form.value.status = Status.TODO;
+        closeModal();
       } else {
-        const blocker = this.createBlocker();
-        const errorWindow = this.createWindow(
-          'No empty fields. Please, fill them all.',
-          'confirmWindowStyles',
-          'confirmMessageStyles',
-        );
-        blocker.appendChild(errorWindow);
-        const okBtn = this.createButton('Ok', 'btnStyles');
-        const btnBlock = this.createBtnBlock('btnBlockStyles');
-        btnBlock.appendChild(okBtn);
-        errorWindow.appendChild(btnBlock);
-        okBtn.onclick = function () {
-          blocker.remove();
-        };
+        declineModalIsOpen.value = true;
       }
-    },
-    closeModal() {
-      this.$emit('close-modal');
-    },
+    };
+    const closeModal = () => {
+      context.emit('close-modal');
+    };
+    const closeDeclineModal = () => {
+      declineModalIsOpen.value = false;
+    };
+    return {
+      form,
+      declineModalIsOpen,
+      formattedTaskDeadline,
+      addTask,
+      closeModal,
+      closeDeclineModal,
+    };
   },
 });
 </script>
