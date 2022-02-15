@@ -77,7 +77,7 @@ export default defineComponent({
           name: form.value.name,
           desc: form.value.desc,
           deadLine: form.value.date,
-          id: stateTasks.value.length + 1,
+          id: stateTasks.value.length + 10,
           status: formattedStatus || Status.TODO,
           openingDate: new Date(),
         });

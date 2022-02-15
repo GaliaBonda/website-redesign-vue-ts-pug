@@ -40,7 +40,7 @@ const mainModule: Module<any, unknown> = {
       state.tasks.push(payload);
     },
     removeTask(state: State, index: number) {
-      state.tasks.splice(index, 1);
+      state.tasks = state.tasks.filter((item) => item.id !== index);
     },
     filterTasksByNames(state: State, name: string) {
       state.tasks = state.tasks.filter((item) => item.name.includes(name));
@@ -107,16 +107,28 @@ const mainModule: Module<any, unknown> = {
       }
     },
     async addTask({commit}, task: Task) {
-      await addTask(task);
-      commit('addNewTask', task);
+      try {
+        await addTask(task);
+        commit('addNewTask', task);
+      } catch (error: any) {
+        console.error(error.message);
+      }
     },
     async deleteTask({commit}, index: number) {
-      await deleteTask(index.toString());
-      commit('removeTask', index);
+      try {
+        await deleteTask(index.toString());
+        commit('removeTask', index);
+      } catch (error: any) {
+        console.error(error.message);
+      }
     },
     async changeTask({commit}, task: Task) {
-      await changeTask(task.id.toString(), task);
-      commit('changeTask', task);
+      try {
+        await changeTask(task.id.toString(), task);
+        commit('changeTask', task);
+      } catch (error: any) {
+        console.error(error.message);
+      }
     },
   },
   getters: {},

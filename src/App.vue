@@ -6,6 +6,8 @@ AppLayout
 import {defineComponent, onBeforeMount} from 'vue';
 import {useStore} from 'vuex';
 import AppLayout from './components/AppLayout.vue';
+import Status from './interfaces/status.interface';
+import {addTask} from './service/taskApi';
 
 export default defineComponent({
   components: {
