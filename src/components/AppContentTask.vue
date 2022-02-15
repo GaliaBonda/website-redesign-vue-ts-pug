@@ -7,7 +7,7 @@
     p.record__date {{formatDate(deadLine)}}
   .record__btns
     button.record__btn(v-on:click="showDetails") Details...
-    button.record__delete-btn.record__btn(v-on:click="deleteTask(index)") Delete task
+    button.record__delete-btn.record__btn(v-on:click="deleteTask") Delete task
   TaskDetailsModal(v-show="detailsModalIsOpen" 
   v-on:close-details-modal="closeDetails" 
   v-bind:name="name" v-bind:desc="desc" v-bind:deadLine="deadLine" 
@@ -39,7 +39,10 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     let detailsModalIsOpen = ref(false);
-    const deleteTask = (index: number) => store.commit('removeTask', index);
+    const deleteTask = () => {
+      store.dispatch('deleteTask', props.id);
+      // store.commit('removeTask', index);
+    };
     const showDetails = () => (detailsModalIsOpen.value = true);
     const closeDetails = () => (detailsModalIsOpen.value = false);
     const record = ref(null);

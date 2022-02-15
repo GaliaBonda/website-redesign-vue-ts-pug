@@ -59,9 +59,10 @@ export default defineComponent({
       tasksNumber = stateTasks.value.length;
     });
 
-    const deleteTask = (index: number) => {
-      store.commit('removeTask', index);
-    };
+    // const deleteTask = (index: number) => {
+    //   store.dispatch('deleteTask', index);
+    //   // store.commit('removeTask', index);
+    // };
     let modalIsOpen = ref(false);
     const openNewTaskModal = () => {
       modalIsOpen.value = true;
@@ -80,7 +81,7 @@ export default defineComponent({
 
     return {
       setItemRef,
-      deleteTask,
+      // deleteTask,
       modalIsOpen,
       openNewTaskModal,
       closeNewTaskModal,

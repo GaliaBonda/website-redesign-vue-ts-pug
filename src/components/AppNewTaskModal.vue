@@ -33,7 +33,6 @@
 import {computed, defineComponent, ref, WritableComputedRef} from 'vue';
 import {useStore} from 'vuex';
 import Status from '../interfaces/status.interface';
-import {createMessage} from '../mixins/createMessage';
 import AppMessage from './AppMessage.vue';
 
 export default defineComponent({
@@ -74,7 +73,7 @@ export default defineComponent({
       const formattedStatus = Status[formStatus as unknown as keyof typeof Status];
 
       if (form.value.name && form.value.desc && form.value.date) {
-        store.commit('addNewTask', {
+        store.dispatch('addTask', {
           name: form.value.name,
           desc: form.value.desc,
           deadLine: form.value.date,
@@ -82,6 +81,14 @@ export default defineComponent({
           status: formattedStatus || Status.TODO,
           openingDate: new Date(),
         });
+        // store.commit('addNewTask', {
+        //   name: form.value.name,
+        //   desc: form.value.desc,
+        //   deadLine: form.value.date,
+        //   id: stateTasks.value.length + 1,
+        //   status: formattedStatus || Status.TODO,
+        //   openingDate: new Date(),
+        // });
         form.value.name = '';
         form.value.desc = '';
         form.value.date = new Date();
