@@ -19,6 +19,8 @@ import {formatDate} from '@/mixins/formatDate';
 import {computed, defineComponent, ref} from 'vue';
 import TaskDetailsModal from './TaskDetailsModal.vue';
 import useFormatDate from '@/composables/useFormatDate';
+import {useStore} from 'vuex';
+import Task from '@/interfaces/task.interface';
 
 export default defineComponent({
   name: 'AppTask',
@@ -70,90 +72,57 @@ export default defineComponent({
       if (diff >= 0 && Math.abs(diff) <= oneDayInMs) return true;
       return false;
     });
+
+    const store = useStore();
+    const startMoving = (event: MouseEvent) => {
+      if (store.state.moving.mouseIsTracked) return;
+      store.commit('changeMouseTracking', true);
+      const currentCard = event.currentTarget as HTMLElement;
+      currentCard.style.position = 'absolute';
+      currentCard.style.zIndex = '1000';
+      store.commit('setCurrentCard', {
+        card: currentCard,
+        id: props.id,
+      });
+    };
+
+    const stopCardMoving = (event: MouseEvent) => {
+      if (props.toDoEdge && props.inProgressEdge) relocateCard(event.clientX, props.toDoEdge, props.inProgressEdge);
+      store.commit('changeMouseTracking', false);
+      const currentCard = store.state.moving.currentCard;
+      if (currentCard) {
+        currentCard.style.zIndex = '1';
+        store.commit('setCurrentCard', null);
+      }
+    };
+    const relocateCard = (x: number, todoEdge: number, inProgressEdge: number) => {
+      const currentStatus = store.state.main.tasks.find((item: Task) => item.id === store.state.moving.id).status;
+      if (x > todoEdge && x < inProgressEdge) {
+        store.commit('changeTaskStatus', {id: store.state.moving.id, status: Status.INPROGRESS});
+      } else if (x > inProgressEdge) {
+        store.commit('changeTaskStatus', {id: store.state.moving.id, status: Status.DONE});
+      } else if (x < todoEdge && currentStatus !== Status.DONE) {
+        store.commit('changeTaskStatus', {id: store.state.moving.id, status: Status.TODO});
+      }
+    };
+    const showDetails = () => {
+      detailsModalIsOpen.value = true;
+    };
+    const closeDetails = () => {
+      detailsModalIsOpen.value = false;
+    };
+
     return {
       detailsModalIsOpen,
       formatDate,
       taskClass,
       isExpired,
       isUnderAttention,
+      startMoving,
+      stopCardMoving,
+      showDetails,
+      closeDetails,
     };
-  },
-  // mixins: [formatDate],
-  // data() {
-  //   return {
-  //     detailsModalIsOpen: false,
-  //   };
-  // },
-  computed: {
-    // taskClass() {
-    //   let taskStyle = '';
-    //   switch (this.status) {
-    //     case Status.TODO:
-    //       taskStyle = 'todo';
-    //       break;
-    //     case Status.INPROGRESS:
-    //       taskStyle = 'inprogress';
-    //       break;
-    //     case Status.DONE:
-    //       taskStyle = 'done';
-    //       break;
-    //   }
-    //   return taskStyle;
-    // },
-    // isExpired() {
-    //   if (!this.deadLine) return false;
-    //   const todayDate = new Date();
-    //   const difference = +this.deadLine - +todayDate;
-    //   if (difference < 0) return true;
-    //   return false;
-    // },
-    // isUnderAttention() {
-    //   const oneDayInMs = 86400000;
-    //   if (!this.deadLine) return false;
-    //   const todayDate = new Date();
-    //   const diff = +this.deadLine - +todayDate;
-    //   if (diff >= 0 && Math.abs(diff) <= oneDayInMs) return true;
-    //   return false;
-    // },
-  },
-  methods: {
-    startMoving(event: MouseEvent) {
-      if (this.$store.state.moving.mouseIsTracked) return;
-      this.$store.commit('changeMouseTracking', true);
-      const currentCard = event.currentTarget as HTMLElement;
-      currentCard.style.position = 'absolute';
-      currentCard.style.zIndex = '1000';
-      this.$store.commit('setCurrentCard', {
-        card: currentCard,
-        id: this.id,
-      });
-    },
-
-    stopCardMoving(event: MouseEvent) {
-      if (this.toDoEdge && this.inProgressEdge) this.relocateCard(event.clientX, this.toDoEdge, this.inProgressEdge);
-      this.$store.commit('changeMouseTracking', false);
-      const currentCard = this.$store.state.moving.currentCard;
-      if (currentCard) {
-        currentCard.style.zIndex = '1';
-        this.$store.commit('setCurrentCard', null);
-      }
-    },
-    relocateCard(x: number, todoEdge: number, inProgressEdge: number) {
-      const currentStatus = this.$store.state.main.tasks.find((item) => item.id === this.$store.state.moving.id).status;
-      if (x > todoEdge && x < inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.$store.state.moving.id, status: Status.INPROGRESS});
-      } else if (x > inProgressEdge) {
-        this.$store.commit('changeTaskStatus', {id: this.$store.state.moving.id, status: Status.DONE});
-      } else if (x < todoEdge && currentStatus !== Status.DONE) {
-        this.$store.commit('changeTaskStatus', {id: this.$store.state.moving.id, status: Status.TODO});
-      }
-    },
-    showDetails() {
-      this.detailsModalIsOpen = true;
-    },
-    closeDetails() {
-      this.detailsModalIsOpen = false;
-    },
   },
 });
 </script>
