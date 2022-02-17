@@ -79,7 +79,8 @@ export default defineComponent({
         status: Status[taskStatus.value?.toUpperCase() as unknown as keyof typeof Status],
         deadLine: taskDeadLine.value,
       };
-      store.commit('changeTask', updatedTask);
+      // store.commit('changeTask', updatedTask);
+      store.dispatch('changeTask', updatedTask);
       closeModal();
     };
     return {

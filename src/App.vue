@@ -3,16 +3,26 @@ AppLayout
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, onBeforeMount} from 'vue';
+import {useStore} from 'vuex';
 import AppLayout from './components/AppLayout.vue';
+import Status from './interfaces/status.interface';
+import {addTask} from './service/taskApi';
 
 export default defineComponent({
   components: {
     AppLayout,
   },
-  beforeMount() {
-    this.$store.commit('initialiseStore');
+  setup() {
+    const store = useStore();
+    onBeforeMount(() => {
+      store.dispatch('loadTasks');
+    });
   },
+  // beforeMount() {
+  //   // this.$store.commit('initialiseStore');
+  //   this.$store.dispatch('loadTasks');
+  // },
 });
 </script>
 

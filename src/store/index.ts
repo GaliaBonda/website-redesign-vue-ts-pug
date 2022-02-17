@@ -2,6 +2,7 @@ import {createStore, Module} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
 import {State, StateModules} from 'vue';
+import {addTask, changeTask, deleteTask, getTasks} from '@/service/taskApi';
 
 const initialState: Task[] = [
   {
@@ -39,7 +40,7 @@ const mainModule: Module<any, unknown> = {
       state.tasks.push(payload);
     },
     removeTask(state: State, index: number) {
-      state.tasks.splice(index, 1);
+      state.tasks = state.tasks.filter((item) => item.id !== index);
     },
     filterTasksByNames(state: State, name: string) {
       state.tasks = state.tasks.filter((item) => item.name.includes(name));
@@ -81,8 +82,55 @@ const mainModule: Module<any, unknown> = {
         state = Object.assign(state, newState);
       }
     },
+    setTasks(state, payload: Task[]) {
+      const newState = {...state, tasks: payload};
+      state = Object.assign(state, newState);
+    },
   },
-  actions: {},
+  actions: {
+    async loadTasks({commit}) {
+      const response = await getTasks();
+      const savedTasks: Task[] = [];
+      if (response) {
+        (response as unknown as Array<Record<string, string>>).forEach((item: Record<string, string>) => {
+          const task: Task = {
+            deadLine: new Date(item.deadLine),
+            openingDate: new Date(item.openingDate),
+            status: Status[item.status.toUpperCase() as unknown as keyof typeof Status],
+            id: Number.parseInt(item.id),
+            name: item.name,
+            desc: item.desc,
+          };
+          savedTasks.push(task);
+        });
+        commit('setTasks', savedTasks);
+      }
+    },
+    async addTask({commit}, task: Task) {
+      try {
+        await addTask(task);
+        commit('addNewTask', task);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    },
+    async deleteTask({commit}, index: number) {
+      try {
+        await deleteTask(index.toString());
+        commit('removeTask', index);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    },
+    async changeTask({commit}, task: Task) {
+      try {
+        await changeTask(task.id.toString(), task);
+        commit('changeTask', task);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    },
+  },
   getters: {},
 };
 
