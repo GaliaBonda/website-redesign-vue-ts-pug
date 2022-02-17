@@ -1,7 +1,7 @@
 <template lang="pug">
 .task(v-bind:class="[taskClass, {expired: isExpired}, {attention: isUnderAttention}]" 
 v-on:mousedown.stop.prevent="startMoving"  
-v-on:mouseup.stop.prevent="stopCardMoving" v-on:ondragstart.stop.prevent)
+v-on:mouseup.stop.prevent="stopCardMoving")
   .task-name {{name}}
   .task-deadline {{formatDate(deadLine)}}
   button.task-details-btn.record__btn(v-on:click="showDetails") Details...
@@ -27,6 +27,11 @@ export default defineComponent({
   components: {
     TaskDetailsModal,
   },
+  data: () => {
+    return {
+      count: 1,
+    };
+  },
   props: {
     name: String,
     desc: String,
@@ -38,6 +43,11 @@ export default defineComponent({
     toDoEdge: Number,
     inProgressEdge: Number,
   },
+  // data: () => {
+  //   return {
+  //     count: 1,
+  //   };
+  // },
   setup(props) {
     let detailsModalIsOpen = ref(false);
     const formatDate = useFormatDate(props.deadLine);

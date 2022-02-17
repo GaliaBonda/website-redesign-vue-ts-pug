@@ -3,6 +3,7 @@ import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
 import {State, StateModules} from 'vue';
 import {addTask, changeTask, deleteTask, getTasks} from '@/service/taskApi';
+import {TokenSyntaxKind} from 'typescript';
 
 const initialState: Task[] = [
   {
@@ -40,20 +41,20 @@ const mainModule: Module<any, unknown> = {
       state.tasks.push(payload);
     },
     removeTask(state: State, index: number) {
-      state.tasks = state.tasks.filter((item) => item.id !== index);
+      state.tasks = state.tasks.filter((item: Task) => item.id !== index);
     },
     filterTasksByNames(state: State, name: string) {
-      state.tasks = state.tasks.filter((item) => item.name.includes(name));
+      state.tasks = state.tasks.filter((item: Task) => item.name.includes(name));
     },
     changeTaskStatus(state: State, payload: {id: number; status: Status}) {
-      state.tasks.map((item) => {
+      state.tasks.map((item: Task) => {
         if (item.id === payload.id) {
           item.status = payload.status;
         }
       });
     },
     changeTask(state: State, payload: Task) {
-      state.tasks.map((item) => {
+      state.tasks.map((item: Task) => {
         if (item.id === payload.id) {
           item.name = payload.name;
           item.desc = payload.desc;

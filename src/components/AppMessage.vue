@@ -18,6 +18,11 @@ export default defineComponent({
     text: String,
     changesAllow: Boolean,
   },
+  data: () => {
+    return {
+      count: 1,
+    };
+  },
   setup(props, context) {
     const closeModal = (e: Event) => {
       e.preventDefault();
