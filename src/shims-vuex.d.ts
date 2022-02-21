@@ -1,5 +1,6 @@
 import {ComponentCustomProperties} from 'vue';
 import {Module, ModuleTree, Store} from 'vuex';
+import Activity from './interfaces/activity.interface';
 
 declare module '@vue/runtime-core' {
   interface State {
@@ -8,7 +9,7 @@ declare module '@vue/runtime-core' {
     currentCard: HTMLElement | null;
     id: number;
     images: Img[];
-    records: Record[];
+    records: Activity[];
     currentImgId: number;
   }
 

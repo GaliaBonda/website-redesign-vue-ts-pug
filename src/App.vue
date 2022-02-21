@@ -17,6 +17,7 @@ export default defineComponent({
     const store = useStore();
     onBeforeMount(() => {
       store.dispatch('loadTasks');
+      store.dispatch('loadActivities');
     });
   },
   // beforeMount() {

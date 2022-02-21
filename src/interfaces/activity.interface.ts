@@ -1,7 +1,7 @@
-export default interface Record {
+export default interface Activity {
   recordType: string;
   recordText: string;
-  recordDate: Date;
+  recordDate: string;
   recordHasDetails: boolean;
   recordDetails: string;
   recordHasImg: boolean;

@@ -20,7 +20,7 @@
 <style scoped lang="scss" src="../styles/scss/content.scss"></style>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from 'vue';
+import {computed, defineComponent, onBeforeMount, ref} from 'vue';
 import {useStore} from 'vuex';
 // import mitt from 'mitt';
 
@@ -35,11 +35,14 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const stateActivity = computed(() => store.state.activity);
+
     let images = ref(stateActivity.value.images);
     let records = ref(stateActivity.value.records);
+
     const getItemIndex = (id: number) => {
       store.commit('changeCurrentImg', id);
     };
+
     return {
       images,
       records,

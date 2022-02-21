@@ -2,8 +2,8 @@ import {createStore, Module} from 'vuex';
 import Task from '@/interfaces/task.interface';
 import Status from '@/interfaces/status.interface';
 import {State, StateModules} from 'vue';
-import {addTask, changeTask, deleteTask, getTasks} from '@/service/taskApi';
-import {TokenSyntaxKind} from 'typescript';
+import {addActivity, addTask, changeTask, deleteActivity, deleteTask, getActivities, getTasks} from '@/service/taskApi';
+import Activity from '@/interfaces/activity.interface';
 
 const initialState: Task[] = [
   {
@@ -183,41 +183,63 @@ const activityModule: Module<any, unknown> = {
         id: 4,
       },
     ],
-    records: [
-      {
-        recordType: 'record__done',
-        recordText: 'Darika Samak mark as done Listing on Product Hunt so that we can reach as many potential users',
-        recordDate: '8:40 PM',
-        recordHasDetails: false,
-        recordDetails: '',
-        recordHasImg: false,
-        id: 11,
-      },
-      {
-        recordType: 'record__comment',
-        recordText: 'Emilee Simchenko commented on Account for teams and personal in bottom style',
-        recordDate: '7:32 PM',
-        recordHasDetails: true,
-        recordDetails:
-          'During a project build, it is necessary to evaluate the product design and development against project requirements and outcomes',
-        recordHasImg: false,
-        id: 22,
-      },
-      {
-        recordType: 'record__upload',
-        recordText: 'Darika Samak uploaded 4 files on An option to search in current projects or in all projects',
-        recordDate: '6:02 PM',
-        recordHasDetails: false,
-        recordDetails: '',
-        recordHasImg: true,
-        id: 33,
-      },
-    ],
+    records: [],
+    // records: [
+    //   {
+    //     recordType: 'record__done',
+    //     recordText: 'Darika Samak mark as done Listing on Product Hunt so that we can reach as many potential users',
+    //     recordDate: '8:40 PM',
+    //     recordHasDetails: false,
+    //     recordDetails: '',
+    //     recordHasImg: false,
+    //     id: 11,
+    //   },
+    //   {
+    //     recordType: 'record__comment',
+    //     recordText: 'Emilee Simchenko commented on Account for teams and personal in bottom style',
+    //     recordDate: '7:32 PM',
+    //     recordHasDetails: true,
+    //     recordDetails:
+    //       'During a project build, it is necessary to evaluate the product design and development against project requirements and outcomes',
+    //     recordHasImg: false,
+    //     id: 22,
+    //   },
+    //   {
+    //     recordType: 'record__upload',
+    //     recordText: 'Darika Samak uploaded 4 files on An option to search in current projects or in all projects',
+    //     recordDate: '6:02 PM',
+    //     recordHasDetails: false,
+    //     recordDetails: '',
+    //     recordHasImg: true,
+    //     id: 33,
+    //   },
+    // ],
     currentImgId: 3,
   }),
   mutations: {
     changeCurrentImg(state: State, payload: number) {
       state.currentImgId = payload;
+    },
+    setActivities(state, payload: unknown) {
+      const newState = {...state, records: payload};
+      state = Object.assign(state, newState);
+    },
+  },
+  actions: {
+    loadActivities({commit}) {
+      const response = getActivities();
+      let activities;
+      response.then((res) => {
+        activities = res;
+        // console.log(activities);
+        commit('setActivities', activities);
+      });
+    },
+    addActivity({commit}, record: Activity) {
+      addActivity(record);
+    },
+    deleteActivity({commit}, index: number) {
+      deleteActivity(index.toString());
     },
   },
 };
