@@ -16,7 +16,7 @@ v-bind:editAllow="true")
 <script lang="ts">
 import Status from '@/interfaces/status.interface';
 import {formatDate} from '@/mixins/formatDate';
-import {computed, defineComponent, ref} from 'vue';
+import {computed, defineComponent, PropType, ref} from 'vue';
 import TaskDetailsModal from './TaskDetailsModal.vue';
 import useFormatDate from '@/composables/useFormatDate';
 import {useStore} from 'vuex';
@@ -27,27 +27,17 @@ export default defineComponent({
   components: {
     TaskDetailsModal,
   },
-  data: () => {
-    return {
-      count: 1,
-    };
-  },
   props: {
     name: String,
     desc: String,
     deadLine: Date,
     id: Number,
     status: {
-      type: String,
+      type: String as PropType<Status>,
     },
     toDoEdge: Number,
     inProgressEdge: Number,
   },
-  // data: () => {
-  //   return {
-  //     count: 1,
-  //   };
-  // },
   setup(props) {
     let detailsModalIsOpen = ref(false);
     const formatDate = useFormatDate(props.deadLine);
