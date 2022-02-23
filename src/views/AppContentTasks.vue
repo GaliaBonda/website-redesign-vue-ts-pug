@@ -58,11 +58,6 @@ export default defineComponent({
       if (tasksNumber < stateTasks.value.length) itemRefs[itemRefs.length - 1].animateNewTask();
       tasksNumber = stateTasks.value.length;
     });
-
-    // const deleteTask = (index: number) => {
-    //   store.dispatch('deleteTask', index);
-    //   // store.commit('removeTask', index);
-    // };
     let modalIsOpen = ref(false);
     const openNewTaskModal = () => {
       modalIsOpen.value = true;

@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppTask.vue correct snapshot 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="task todo"
+  >
+    <div
+      class="task-name"
+    />
+    <div
+      class="task-deadline"
+    />
+    <button
+      class="task-details-btn record__btn"
+    >
+      Details...
+    </button>
+  </div>
+  <task-details-modal-stub
+    editallow="true"
+    status="todo"
+    style="display: none;"
+  />
+  
+</div>
+`;

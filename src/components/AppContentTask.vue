@@ -41,7 +41,6 @@ export default defineComponent({
     let detailsModalIsOpen = ref(false);
     const deleteTask = () => {
       store.dispatch('deleteTask', props.id);
-      // store.commit('removeTask', index);
     };
     const showDetails = () => (detailsModalIsOpen.value = true);
     const closeDetails = () => (detailsModalIsOpen.value = false);

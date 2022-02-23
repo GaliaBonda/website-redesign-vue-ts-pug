@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppContentKanban.vue correct snapshot 1`] = `
+<div
+  class="content main__content"
+>
+  <div
+    class="content__container"
+  >
+    <h2
+      class="content__date"
+    >
+      Kanban Board
+    </h2>
+    <div
+      class="content__records"
+    >
+      <div
+        class="content__search"
+      >
+        <label
+          class="search-label"
+        >
+          Task name search:
+          <input
+            class="search"
+            type="text"
+          />
+        </label>
+        <div
+          class="content-search__calendar"
+        >
+          <p
+            class="calendar-search__label search-label"
+          >
+            Calendar search:
+          </p>
+          <!--v-if-->
+        </div>
+      </div>
+      <div
+        class="content__table kanban-table"
+      >
+        
+        <div
+          class="kanban-table__item"
+        >
+          <app-kanban-tasks-stub
+            inprogressedge="0"
+            status="todo"
+            tasks="[object Object]"
+            todoedge="0"
+          />
+        </div>
+        <div
+          class="kanban-table__item"
+        >
+          <app-kanban-tasks-stub
+            inprogressedge="0"
+            status="inprogress"
+            tasks="[object Object]"
+            todoedge="0"
+          />
+        </div>
+        <div
+          class="kanban-table__item"
+        >
+          <app-kanban-tasks-stub
+            inprogressedge="0"
+            status="done"
+            tasks="[object Object]"
+            todoedge="0"
+          />
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+`;
